@@ -26,11 +26,11 @@
 
 ## 🏖 项目概述
 
-本项目为铁人三项运动员 **Duoduo**（21岁，上海建桥学院）定制开发，集成以下三类数据：
+本项目为铁人三项运动员 **Xinyu**（21岁）开发，集成以下三类数据：
 
 | 数据源 | 说明 | 格式 |
 |--------|------|------|
-| COROS 高驰手表 | 运动历史、训练评分、计划完成情况 | REST API（非官方） |
+| COROS 高驰手表 | 运动历史、训练评分、计划完成情况 | REST API |
 | 训练计划 ICS | 教练安排的每日训练内容 | iCalendar `.ics` 文件 |
 | 课程表 ICS | 学期课程安排（跨 Agent 协作） | iCalendar `.ics` 文件 |
 
@@ -408,8 +408,6 @@ node get_coros_data.js --history --debug
 | 300-301 | 游泳类（泳池/开放水域）| 🏊 |
 | 10000 | 标铁/半铁 | 🔥 |
 
-> ⚠️ COROS API 为非官方接口，token 有效期有限，敏感操作建议自行承担风险。
-
 ### 4. ICS 解析逻辑
 
 **服务端解析（server.js）**：
@@ -428,7 +426,7 @@ node get_coros_data.js --history --debug
 
 ## 📦 数据来源
 
-### COROS API（非官方）
+### COROS API
 
 - **基础 URL**：`https://teamcnapi.coros.com`
 - **认证方式**：MD5 密码 + accessToken
@@ -521,7 +519,6 @@ node get_coros_data.js --history --debug
 - ✅ 训练历史记录（支持点击展开详情）
 - ✅ 中英文双语切换
 - ✅ 课程表集成
-- ✅ COROS 非官方 API 完整接入
 - ✅ 服务端数据内嵌策略（抗弱网）
 - ✅ Canvas 烟花点击特效
 - ✅ iPhone Tailscale 远程访问
@@ -532,7 +529,7 @@ node get_coros_data.js --history --debug
 
 | 项目 | 内容 |
 |------|------|
-| 运动员 | Duoduo，21岁，上海建桥学院 |
+| 运动员 | Xinyu，21岁 |
 | 运动类型 | 铁人三项（游泳 + 骑行 + 跑步）|
 | 最新比赛 | 2026-05-24 滴水湖标铁 3:02:14 |
 | 当前训练计划 | S4557（2026-02-02 ~ 2026-06-07，共126天）|
