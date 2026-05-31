@@ -1,0 +1,33 @@
+# Node.js
+node_modules/
+
+# 日志
+*.log
+/tmp/
+/tmp_*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 本地配置文件（含账号密码）
+get_coros_data.js
+
+# 服务端嵌入的临时数据
+server_embed_*.js
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境变量
+.env
+.env.local
+.env.production
+
+# Windows
+Thumbs.db
+ehthumbs.db
