@@ -50,12 +50,13 @@
     .hdr { margin-bottom: 28px; position: relative; }
     .hdr-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 12px; }
     .hdr-left { display: flex; flex-direction: column; gap: 6px; }
-    .hdr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-wrap: wrap; max-width: 200px; }
+    .hdr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
     .hdr-emoji { font-size: 1.5rem; }
     .hdr-emojis { display: flex; gap: 4px; align-items: center; }
     .hdr-emoji { font-size: 1.15rem; }
     .hdr-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 11px; font-size: 0.72rem; font-weight: 600; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
-    .hdr-btn-row { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
+    .hdr-btn-row { display: flex; flex-direction: row; gap: 6px; align-items: center; }
+    .hdr-lang-row { display: flex; flex-direction: row; gap: 6px; align-items: center; }
     .hdr-date-pill { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .hdr-date-split { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
     .hdr-date-left { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; text-align: left; }
@@ -296,6 +297,73 @@
     .detail-act-name { font-size: 0.9rem; font-weight: 700; color: var(--ink); flex: 1; }
     .detail-act-meta { font-size: 0.75rem; color: var(--ink-3); }
 
+    /* ── Modals ── */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal-content { background: #fff; border-radius: 16px; max-height: 90vh; overflow-y: auto; width: 100%; }
+    .pb-modal { max-width: 680px; padding: 28px; }
+    .share-modal { max-width: 580px; padding: 28px; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+    .modal-close { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--ink-3); padding: 4px 8px; border-radius: 6px; }
+    .modal-close:hover { background: var(--surface); }
+
+    /* PB Tabs */
+    .pb-tabs, .share-tabs { display: flex; gap: 4px; margin-bottom: 18px; background: var(--surface); border-radius: 10px; padding: 4px; }
+    .pb-tab, .share-tab { flex: 1; padding: 8px 0; border: none; background: none; border-radius: 8px; font-size: 0.82rem; font-weight: 600; color: var(--ink-3); cursor: pointer; transition: all 0.2s; }
+    .pb-tab.active, .share-tab.active { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+    /* PB Form */
+    .pb-form { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 18px; }
+    .pb-form-title { font-size: 0.8rem; font-weight: 700; color: var(--ink-2); margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; }
+    .pb-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .pb-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; background: #fff; color: var(--ink); outline: none; transition: border 0.2s; }
+    .pb-input:focus { border-color: #C07A5A; }
+    .pb-submit-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--ink); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .pb-submit-btn:hover { opacity: 0.85; }
+
+    /* PB Records List */
+    .pb-records-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
+    .pb-record-item { background: var(--surface); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+    .pb-record-item .pb-record-icon { font-size: 1.2rem; }
+    .pb-record-item .pb-record-info { flex: 1; }
+    .pb-record-item .pb-record-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+    .pb-record-item .pb-record-meta { font-size: 0.72rem; color: var(--ink-3); margin-top: 2px; }
+    .pb-record-item .pb-record-total { font-size: 0.9rem; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .pb-record-item .pb-record-del { background: none; border: none; color: #e74c3c; font-size: 0.75rem; cursor: pointer; padding: 4px 6px; border-radius: 4px; }
+    .pb-record-item .pb-record-del:hover { background: #fde8e8; }
+
+    /* PB Grid */
+    .pb-pbs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pb-card { background: var(--surface); border-radius: 12px; padding: 14px; }
+    .pb-card .pb-card-dist { font-size: 0.72rem; color: var(--ink-3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .pb-card .pb-card-time { font-size: 1.2rem; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .pb-card .pb-card-event { font-size: 0.72rem; color: var(--ink-3); margin-top: 4px; }
+    .pb-card .pb-card-date { font-size: 0.7rem; color: var(--ink-3); margin-top: 2px; }
+
+    /* Share Card */
+    .share-card-inner { background: #EDE8E0; border-radius: 12px; padding: 28px 30px; margin-bottom: 16px; }
+    .share-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .share-card-badge { background: var(--ink); color: #EDE8E0; font-size: 0.65rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+    .share-card-week { font-size: 0.72rem; color: var(--ink-3); }
+    .share-card-title { font-size: 1.3rem; font-weight: 700; color: var(--ink); margin-bottom: 14px; line-height: 1.3; }
+    .share-card-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .share-stat { background: #fff; border-radius: 10px; padding: 12px 10px; text-align: center; }
+    .share-stat-num { font-size: 1.3rem; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .share-stat-label { font-size: 0.65rem; color: var(--ink-3); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .share-card-sports { margin-bottom: 12px; }
+    .share-card-sport-label { font-size: 0.7rem; color: var(--ink-3); margin-bottom: 6px; }
+    .share-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .share-bar-label { font-size: 0.65rem; width: 30px; color: var(--ink-3); }
+    .share-bar { flex: 1; height: 6px; background: #fff; border-radius: 3px; overflow: hidden; }
+    .share-bar-fill { height: 100%; border-radius: 3px; }
+    .share-bar-pct { font-size: 0.65rem; color: var(--ink-3); width: 32px; text-align: right; font-variant-numeric: tabular-nums; }
+    .share-card-footer { font-size: 0.65rem; color: var(--ink-3); text-align: center; margin-top: 12px; }
+
+    /* Share Actions */
+    .share-actions { display: flex; gap: 8px; }
+    .share-download-btn { flex: 1; padding: 11px; background: var(--ink); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .share-download-btn:hover { opacity: 0.85; }
+
     /* ── Animations ── */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .fu { animation: fadeUp 0.35s ease both; }
@@ -317,10 +385,21 @@
           <div class="hdr-sub">What you choose to focus on, will grow.</div>
         </div>
         <div class="hdr-right">
-          <div class="hdr-btn-row">
+          <div class="hdr-lang-row">
             <button id="langToggle" onclick="toggleLang()" class="hdr-btn">EN ↔ ZH</button>
+          </div>
+          <div class="hdr-btn-row">
+            <button id="shareBtn" onclick="openShareCard()" class="hdr-btn">📤 分享</button>
+          </div>
+          <div class="hdr-btn-row">
+            <div id="syncStatus" style="font-size:0.62rem;color:var(--ink-3);min-height:26px;display:none;line-height:26px;margin-right:4px;white-space:nowrap"></div>
             <button id="refreshBtn" onclick="refreshData()" class="hdr-btn">⇄ <span data-i18n="syncData">同步数据</span></button>
-            <div id="syncStatus" style="font-size:0.62rem;color:var(--ink-3);text-align:right;min-height:14px;display:none"></div>
+          </div>
+          <div class="hdr-btn-row">
+            <button id="pbBtn" onclick="openPBBtn()" class="hdr-btn">🏆 我的历史赛事</button>
+          </div>
+          <div class="hdr-lang-row">
+            <span id="clock" style="color:var(--ink-3);font-size:0.8rem;white-space:nowrap;"></span>
           </div>
           <div class="hdr-date-pill hdr-date-split">
             <div class="hdr-date-left">
@@ -332,6 +411,76 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- PB Modal -->
+    <div id="pbModal" class="modal" style="display:none">
+      <div class="modal-content pb-modal">
+        <div class="modal-header">
+          <h2 class="modal-title">🏆 我的历史赛事</h2>
+          <button class="modal-close" onclick="closePBModal()">✕</button>
+        </div>
+        <div class="pb-tabs">
+          <button class="pb-tab" onclick="switchPBTab('pbs')" id="pbTabPBs">我的 PB</button>
+          <button class="pb-tab active" onclick="switchPBTab('records')" id="pbTabRecords">记录</button>
+        </div>
+        <!-- Records Tab -->
+        <div id="pbTabContentRecords">
+          <div class="pb-form">
+            <div class="pb-form-title">添加比赛记录</div>
+            <div class="pb-form-grid">
+              <input id="pbName" class="pb-input" placeholder="比赛名称，如：滴水湖标铁" />
+              <input id="pbDate" class="pb-input" type="date" />
+              <select id="pbDist" class="pb-input" onchange="onPBDistChange()">
+                <option value="">选择距离</option>
+                <option value="sprint">迷你铁三（约标铁距离的1/4）</option>
+                <option value="olympic">标铁（1.5km游泳+40km骑行+10km跑步）</option>
+                <option value="half">半程大铁（1.9km+90km+21km）</option>
+                <option value="full">全程大铁（3.8km+180km+42km）</option>
+                <option value="10k">10公里跑步</option>
+                <option value="5k">5公里跑步</option>
+                <option value="21k">半程马拉松</option>
+                <option value="42k">全程马拉松</option>
+              </select>
+              <input id="pbRun" class="pb-input" placeholder="跑步 时间，如 00:48:00" />
+              <div id="pbTriFields" style="display:contents">
+                <input id="pbSwim" class="pb-input" placeholder="游泳 时间，如 00:25:30" />
+                <input id="pbBike" class="pb-input" placeholder="骑行 时间，如 01:15:00" />
+              </div>
+              <input id="pbTotal" class="pb-input" placeholder="总时间（必填），如 03:02:14" />
+            </div>
+            <button class="pb-submit-btn" onclick="addPBRecord()">添加记录</button>
+            <div id="pbFormError" style="color:#e74c3c;font-size:0.8rem;margin-top:6px;display:none"></div>
+          </div>
+          <div class="pb-records-list" id="pbRecordsList"></div>
+        </div>
+        <!-- PBs Tab -->
+        <div id="pbTabContentPBs" style="display:none">
+          <div class="pb-pbs-grid" id="pbPBsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Card Modal -->
+    <div id="shareModal" class="modal" style="display:none">
+      <div class="modal-content share-modal">
+        <div class="modal-header">
+          <h2 class="modal-title">📤 生成分享图</h2>
+          <button class="modal-close" onclick="closeShareModal()">✕</button>
+        </div>
+        <div class="share-tabs">
+          <button class="share-tab active" id="shareTabMonth">本月数据</button>
+        </div>
+        <div id="shareCardPreview"></div>
+        <div class="share-actions">
+          <button class="share-download-btn" onclick="downloadShareCard()">下载图片</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Card Render Target (hidden) -->
+    <div id="shareCardRender" style="position:fixed;left:-9999px;top:-9999px;width:1080px;background:#EDE8E0;padding:60px 70px;font-family:'Inter','Noto Serif SC',sans-serif;overflow:hidden;">
+      <div id="shareCardInner"></div>
     </div>
 
     <!-- Main View -->
@@ -472,7 +621,28 @@ const I18N = {
     syncWeekly: '拉取本周评分…',
     syncHistory: '拉取历史记录…',
     syncDone: '同步完成 ✓',
-    syncFailed: '同步失败，请重试'
+    syncFailed: '同步失败，请重试',
+    pbTitle: 'PB 记录',
+    pbTabRecords: '记录',
+    pbTabPBs: '我的 PB',
+    shareTitle: '生成分享图',
+    shareWeek: '本周战报',
+    shareMonth: '本月数据',
+    shareDownload: '下载图片',
+    statDuration: '训练时长',
+    statCount: '完成次数',
+    statSportMix: '运动类型分布',
+    sun: '日',
+    mon: '一',
+    tue: '二',
+    wed: '三',
+    thu: '四',
+    fri: '五',
+    sat: '六',
+    bikeLabel: '骑',
+    runLabel: '跑',
+    sportLabel: '运动',
+    trainLabel: '训练'
   },
   en: {
     loading: 'Loading',
@@ -514,7 +684,28 @@ const I18N = {
     syncWeekly: 'Fetching weekly data…',
     syncHistory: 'Fetching history…',
     syncDone: 'Synced ✓',
-    syncFailed: 'Sync failed'
+    syncFailed: 'Sync failed',
+    pbTitle: 'PB Records',
+    pbTabRecords: 'Records',
+    pbTabPBs: 'My PBs',
+    shareTitle: 'Generate Share Card',
+    shareWeek: "This Week's Report",
+    shareMonth: 'Monthly Data',
+    shareDownload: 'Download Image',
+    statDuration: 'Duration',
+    statCount: 'Sessions',
+    statSportMix: 'Sport Mix',
+    sun: 'Sun',
+    mon: 'Mon',
+    tue: 'Tue',
+    wed: 'Wed',
+    thu: 'Thu',
+    fri: 'Fri',
+    sat: 'Sat',
+    bikeLabel: 'Bike',
+    runLabel: 'Run',
+    sportLabel: 'Sports',
+    trainLabel: 'Training'
   }
 };
 let locale = localStorage.getItem('dashLocale') || 'zh';
@@ -562,8 +753,8 @@ function sportOf(s,d) {
   if(/rest|休息|恢复/i.test(t)) return 'rest';
   return 'other';
 }
-const iconOf = { swim:'🏊', bike:'🚴', run:'🏃', rest:'😴', other:'💪' };
-const labelOf = { swim:'游泳', bike:'骑行', run:'跑步', rest:'休息', other:'训练' };
+const iconOf = { swim:'\uD83D\uDCa4', bike:'\uD83D\uDEB4', run:'\uD83D\uDC83', rest:'😴', other:'💪' };
+const labelOf = { swim:'游泳', bike:'骑行', run:'跑步', rest:'休息', other:t('trainLabel') };
 
 function parseICS(text) {
   text = text.replace(/DTSTART:2025(0[5-9]|1[0-2])/g,'DTSTART:2026$1');
@@ -703,7 +894,7 @@ function renderStats(d, historyActs){
   }
   const totalDur = Object.values(totals).reduce((a,b)=>a+b,0);
   const labels = { swim:'泳', bike:'骑', run:'跑' };
-  const icons = { swim:'🏊', bike:'🚴', run:'🏃' };
+  const icons = { swim:'\uD83D\uDCa4', bike:'\uD83D\uDEB4', run:'\uD83D\uDC83' };
   if(totalDur > 0){
     const parts = Object.entries(totals).filter(([,v])=>v>0).map(([k,v])=>`${icons[k]}${Math.round(v*100/totalDur)}%`).join('·');
     const partsHtml = Object.entries(totals).filter(([,v])=>v>0).map(([k,v])=>`<span class="pct-item"><span class="pct-icon">${icons[k]}</span><span class="pct-val">${Math.round(v*100/totalDur)}%</span></span>`).join('');
@@ -721,7 +912,7 @@ function renderStats(d, historyActs){
     const colorMap = { 1:'#4DDB82', 2:'#D4A520', 3:'#FF6BA8', 103:'#4DDB82', 300:'#FF6BA8' };
     recentContainer.innerHTML = recent.map(a => {
       const color = colorMap[a.sportType] || '#aaa';
-      const label = a.sportLabel || '运动';
+      const label = a.sportLabel || t('sportLabel');
       const dur = a.duration ? `${Math.round(a.duration/60)}min` : '—';
       const day = String(a.date).slice(4,6)+'/'+String(a.date).slice(6);
       return `<div class="recent-item"><span class="recent-dot" style="background:${color}"></span>${day} ${label} ${dur}</div>`;
@@ -773,7 +964,7 @@ function renderToday(ev){
       const time=timeMatch[2];
       const rest=timeMatch[3].trim();
       html+=`<div class="plan-row">
-        <span class="plan-emoji">${i===0?'🏃':'🏊'}</span>
+        <span class="plan-emoji">${i===0?'\uD83D\uDC83':'\uD83D\uDCa4'}</span>
         <div class="plan-content">
           <div class="plan-main">${title}</div>
           ${rest?`<div class="plan-sub">${rest}</div>`:''}
@@ -806,7 +997,7 @@ function renderWeek(evts,todayKey,activities){
     }
   });
   const days=[];
-  const wds=['日','一','二','三','四','五','六'];
+  const wds=[t('sun'),t('mon'),t('tue'),t('wed'),t('thu'),t('fri'),t('sat')];
   // Start from TODAY, show next 7 days
   for(let i=0; i<7; i++){
     const d=new Date(today); d.setDate(d.getDate()+i);
@@ -862,7 +1053,7 @@ function renderRecent(acts){
   if(!acts.length){el.innerHTML='<div class="empty-state">'+t('noActivityYet')+'</div>';return;}
   el.innerHTML=acts.map(a=>{
     const sportIcon=a.sportIcon||'💪';
-    const sportLabel=a.sportLabel||'训练';
+    const sportLabel=a.sportLabel||t('trainLabel');
     const dist=a.distance?`${(a.distance/1000).toFixed(2)}km`:'';
     const dur=a.duration?`${Math.round(a.duration/60)}min`:'';
     const tl=a.trainingLoad;
@@ -897,7 +1088,7 @@ function showHistory(){
   if(!allHistory.length){list.innerHTML='<div class="empty-state">'+t('noHistory')+'</div>';return;}
   list.innerHTML=allHistory.map((a,i)=>{
     const sportIcon=a.sportIcon||'💪';
-    const sportLabel=a.sportLabel||'训练';
+    const sportLabel=a.sportLabel||t('trainLabel');
     const ds=a.date?`${String(a.date).slice(0,4)}-${String(a.date).slice(4,6)}-${String(a.date).slice(6,8)}`:'—';
     const dist=a.distanceFmt||'';
     const dur=a.durationFmt||'';
@@ -985,7 +1176,7 @@ function showDayDetail(key){
       const pace=a.pace||'';
       const tl=a.trainingLoad?'TL '+a.trainingLoad:'';
       const meta=[dist,dur,hr,pace,tl].filter(Boolean).join(' · ')||'—';
-      html+=`<div class="detail-act"><span class="detail-act-icon">${a.sportIcon||'💪'}</span><span class="detail-act-name">${a.sportLabel||'训练'}</span><span class="detail-act-meta">${meta}</span></div>`;
+      html+=`<div class="detail-act"><span class="detail-act-icon">${a.sportIcon||'💪'}</span><span class="detail-act-name">${a.sportLabel||t('trainLabel')}</span><span class="detail-act-meta">${meta}</span></div>`;
     });
     html+=`</div>`;
   }
@@ -1054,6 +1245,454 @@ function refreshData() {
     // loadData internal catch already showed error; just restore button
     if (btn) { btn.innerHTML = '⇄ <span data-i18n="syncData">' + t('syncData') + '</span>'; btn.disabled = false; }
   });
+}
+
+// ═══════════════════════════════════════════
+// PB Records
+// ═══════════════════════════════════════════
+const PB_KEY = 'duoduo_pb_records';
+const DISTANCE_LABELS = {
+  sprint: '迷你铁三', olympic: '标铁', half: '半程大铁', full: '全程大铁',
+  '10k': '10公里', '5k': '5公里', '21k': '半马', '42k': '全马'
+};
+const DISTANCE_ORDER = ['5k','10k','21k','42k','sprint','olympic','half','full'];
+
+function getPBRecords() {
+  try { return JSON.parse(localStorage.getItem(PB_KEY) || '[]'); } catch { return []; }
+}
+
+function savePBRecords(records) {
+  localStorage.setItem(PB_KEY, JSON.stringify(records));
+}
+
+function calcPBs(records) {
+  const pbs = {};
+  DISTANCE_ORDER.forEach(d => { pbs[d] = null; });
+  records.forEach(r => {
+    if (!r.totalSec) return;
+    if (!pbs[r.dist] || r.totalSec < pbs[r.dist].totalSec) pbs[r.dist] = r;
+  });
+  return pbs;
+}
+
+function timeToSec(t) {
+  if (!t) return 0;
+  const parts = t.split(':').map(Number);
+  if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+  if (parts.length === 2) return parts[0]*60 + parts[1];
+  return 0;
+}
+
+function secToTime(s) {
+  if (!s) return '—';
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function openPBBtn() { renderPBModal(); switchPBTab('pbs'); document.getElementById('pbModal').style.display='flex'; }
+function closePBModal() { document.getElementById('pbModal').style.display='none'; }
+
+function switchPBTab(tab) {
+  document.getElementById('pbTabRecords').classList.toggle('active', tab==='records');
+  document.getElementById('pbTabPBs').classList.toggle('active', tab==='pbs');
+  document.getElementById('pbTabContentRecords').style.display = tab==='records' ? '' : 'none';
+  document.getElementById('pbTabContentPBs').style.display = tab==='pbs' ? '' : 'none';
+  if (tab === 'pbs') renderPBsTab();
+}
+
+function onPBDistChange() {
+  var dist = document.getElementById('pbDist').value;
+  var triDists = ['sprint','olympic','half','full'];
+  var showTri = triDists.indexOf(dist) > -1;
+  var swimEl = document.getElementById('pbSwim');
+  var bikeEl = document.getElementById('pbBike');
+  swimEl.style.display = showTri ? '' : 'none';
+  bikeEl.style.display = showTri ? '' : 'none';
+}
+
+function renderPBModal() {
+  const records = getPBRecords();
+  const container = document.getElementById('pbRecordsList');
+  if (records.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--ink-3);font-size:0.82rem;padding:20px 0">暂无比赛记录，点击上方表单添加</div>';
+    return;
+  }
+  container.innerHTML = records.slice().reverse().map(r => {
+    const distLabel = DISTANCE_LABELS[r.dist] || r.dist;
+    const dateStr = r.date ? r.date.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$2/$3') : '';
+    return `<div class="pb-record-item">
+      <div class="pb-record-icon">${r.dist === 'full' ? '🏆' : r.dist === 'half' ? '🎖️' : '🏅'}</div>
+      <div class="pb-record-info">
+        <div class="pb-record-name">${r.name || '未知比赛'}</div>
+        <div class="pb-record-meta">${distLabel} · ${dateStr}</div>
+      </div>
+      <div class="pb-record-total">${secToTime(r.totalSec)}</div>
+      <button class="pb-record-del" onclick="deletePB('${r.id}')">删除</button>
+    </div>`;
+  }).join('');
+}
+
+function renderPBsTab() {
+  const records = getPBRecords();
+  const pbs = calcPBs(records);
+  const container = document.getElementById('pbPBsGrid');
+  const hasAny = DISTANCE_ORDER.some(d => pbs[d]);
+  if (!hasAny) {
+    container.innerHTML = '<div style="text-align:center;color:var(--ink-3);font-size:0.82rem;padding:20px 0">暂无 PB 数据</div>';
+    return;
+  }
+  container.innerHTML = DISTANCE_ORDER.filter(d => pbs[d]).map(d => {
+    const r = pbs[d];
+    const distLabel = DISTANCE_LABELS[d] || d;
+    const dateStr = r.date ? r.date.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$2/$3') : '';
+    return `<div class="pb-card">
+      <div class="pb-card-dist">${distLabel}</div>
+      <div class="pb-card-time">${secToTime(r.totalSec)}</div>
+      <div class="pb-card-event">${r.name || ''}</div>
+      <div class="pb-card-date">${dateStr}</div>
+    </div>`;
+  }).join('');
+}
+
+function addPBRecord() {
+  const name = document.getElementById('pbName').value.trim();
+  const date = document.getElementById('pbDate').value;
+  const dist = document.getElementById('pbDist').value;
+  const total = document.getElementById('pbTotal').value.trim();
+  const errorEl = document.getElementById('pbFormError');
+  if (!total) { errorEl.textContent = '请填写总时间'; errorEl.style.display = ''; return; }
+  if (!dist) { errorEl.textContent = '请选择距离'; errorEl.style.display = ''; return; }
+  const totalSec = timeToSec(total);
+  if (!totalSec) { errorEl.textContent = '时间格式错误，请使用 HH:MM:SS 格式'; errorEl.style.display = ''; return; }
+  errorEl.style.display = 'none';
+  const records = getPBRecords();
+  records.push({
+    id: Date.now().toString(),
+    name, date, dist,
+    swim: document.getElementById('pbSwim').value.trim(),
+    bike: document.getElementById('pbBike').value.trim(),
+    run: document.getElementById('pbRun').value.trim(),
+    total, totalSec,
+  });
+  savePBRecords(records);
+  // Clear form
+  ['pbName','pbDate','pbDist','pbSwim','pbBike','pbRun','pbTotal','pbNotes'].forEach(id => document.getElementById(id).value = '');
+  renderPBModal();
+}
+
+function deletePB(id) {
+  const records = getPBRecords().filter(r => r.id !== id);
+  savePBRecords(records);
+  renderPBModal();
+}
+
+// ═══════════════════════════════════════════
+// Share Card
+// ═══════════════════════════════════════════
+function openShareCard() {
+  renderShareCard();
+  document.getElementById('shareModal').style.display = 'flex';
+}
+function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
+
+function getWeekBounds() {
+  const now = new Date();
+  const day = now.getDay();
+  const monday = new Date(now); monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return { start: fmt(monday), end: fmt(sunday), monday, sunday };
+}
+
+function getShareStats() {
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const { start, end } = getWeekBounds();
+  const monthKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  const monthStart = monthKey + '-01';
+  const monthEnd = todayKey;
+
+  function _fmtD(v) { var s=String(v); return s.length===8?s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8):s; }
+  const wkActs = allHistory.filter(a => {
+    var d = _fmtD(a.date);
+    return d >= start && d <= end;
+  });
+  const moActs = allHistory.filter(a => {
+    var d = _fmtD(a.date);
+    return d >= monthStart && d <= monthEnd;
+  });
+
+  function sumDur(acts) { return acts.reduce((s,a) => s + (a.duration || 0), 0); }
+  function countBySport(acts, sport) { return acts.filter(a => a.sport === sport).length; }
+  function pct(dur, total) { return total > 0 ? Math.round(dur/total*100) : 0; }
+
+  const wkDur = sumDur(wkActs), moDur = sumDur(moActs);
+  const wkSwim = wkActs.filter(a=>a.sport==='swim').reduce((s,a)=>s+(a.duration||0),0);
+  const wkBike = wkActs.filter(a=>a.sport==='bike').reduce((s,a)=>s+(a.duration||0),0);
+  const wkRun  = wkActs.filter(a=>a.sport==='run').reduce((s,a)=>s+(a.duration||0),0);
+
+  return {
+    wkDur: wkDur > 0 ? (wkDur/3600).toFixed(1)+'h' : '—',
+    wkCount: wkActs.length || '—',
+    wkSwim, wkBike, wkRun, wkDur,
+    wkSwimPct: pct(wkSwim, wkDur),
+    wkBikePct: pct(wkBike, wkDur),
+    wkRunPct: pct(wkRun, wkDur),
+    moDur: moDur > 0 ? (moDur/3600).toFixed(1)+'h' : '—',
+    moCount: moActs.length || '—',
+    now
+  };
+}
+
+function renderShareCard() {
+  var now = new Date();
+  var _mk = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  var _tk = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  const s = getShareStats();
+  const dur = s.moDur;
+  const count = s.moCount;
+  const monthLabel = (now.getMonth()+1) + '月';
+  // 计算月度各项时长（秒）
+  const moActs = allHistory.filter(a => {
+    var sd = String(a.date || '');
+    var d = sd.length===8 ? sd.slice(0,4)+'-'+sd.slice(4,6)+'-'+sd.slice(6,8) : sd;
+    return d >= _mk+'-01' && d <= _tk;
+  });
+  const moDur = moActs.reduce((sum, a) => sum + (a.duration||0), 0);
+  const moSwim = moActs.filter(a=>a.sportType===300).reduce((s,a)=>s+(a.duration||0),0);
+  const moBike = moActs.filter(a=>a.sportType===200).reduce((s,a)=>s+(a.duration||0),0);
+  const moRun  = moActs.filter(a=>a.sportType===100||a.sportType===103).reduce((s,a)=>s+(a.duration||0),0);
+  const pct = (v, tot) => tot > 0 ? Math.round(v/tot*100) : 0;
+  const swimPct = pct(moSwim, moDur);
+  const bikePct = pct(moBike, moDur);
+  const runPct  = pct(moRun,  moDur);
+
+  const cardHTML = `
+    <div class="share-card-inner">
+      <div class="share-card-header">
+        <span class="share-card-badge">🏊‍♀️🚴‍♀️🏃‍♂️ 铁三训练</span>
+        <span class="share-card-week">${monthLabel}</span>
+      </div>
+      <div class="share-card-title">本月数据</div>
+      <div class="share-card-stats">
+        <div class="share-stat">
+          <div class="share-stat-num">${dur}</div>
+          <div class="share-stat-label">训练时长</div>
+        </div>
+        <div class="share-stat">
+          <div class="share-stat-num">${count}</div>
+          <div class="share-stat-label">完成次数</div>
+        </div>
+        <div class="share-stat">
+          <div class="share-stat-num">${bikePct}%</div>
+          <div class="share-stat-label">骑行占比</div>
+        </div>
+      </div>
+      ${moDur > 0 ? `
+      <div class="share-card-sports">
+        <div class="share-card-sport-label">运动类型分布</div>
+        <div class="share-bar-row">
+          <div class="share-bar-label">🏊</div>
+          <div class="share-bar"><div class="share-bar-fill" style="width:${swimPct}%;background:#FF6BA8"></div></div>
+          <div class="share-bar-pct">${swimPct}%</div>
+        </div>
+        <div class="share-bar-row">
+          <div class="share-bar-label">🚴</div>
+          <div class="share-bar"><div class="share-bar-fill" style="width:${bikePct}%;background:#D4A520"></div></div>
+          <div class="share-bar-pct">${bikePct}%</div>
+        </div>
+        <div class="share-bar-row">
+          <div class="share-bar-label">🏃</div>
+          <div class="share-bar"><div class="share-bar-fill" style="width:${runPct}%;background:#4DDB82"></div></div>
+          <div class="share-bar-pct">${runPct}%</div>
+        </div>
+      </div>` : ''}
+      <div class="share-card-footer">github.com/QianXinyu8888/Xinyu-s-Training-Dashboard</div>
+    </div>`;
+
+  document.getElementById('shareCardPreview').innerHTML = cardHTML;
+  document.getElementById('shareCardInner').innerHTML = cardHTML;
+}
+
+function downloadShareCard() {
+  var W=1080,H=1440;
+  var c=document.createElement('canvas');c.width=W;c.height=H;
+  var x=c.getContext('2d');x.textBaseline='top';
+  var rr=function(cx,cy,cw,ch,cr){x.beginPath();x.moveTo(cx+cr,cy);x.lineTo(cx+cw-cr,cy);x.quadraticCurveTo(cx+cw,cy,cx+cw,cy+cr);x.lineTo(cx+cw,ch-cr);x.quadraticCurveTo(cx+cw,ch,cx+cw-cr,ch);x.lineTo(cx+cr,ch);x.quadraticCurveTo(cx,cy+ch,cx,cy+ch-cr);x.lineTo(cx,cy+cr);x.quadraticCurveTo(cx,cy,cx+cr,cy);x.closePath();};
+
+  // Apple Design System colors
+  var C = {
+    ink: '#1d1d1f',
+    inkMuted: '#86868b',
+    inkLight: '#aeaeb2',
+    canvas: '#ffffff',
+    parchment: '#f5f5f7',
+    blue: '#0066cc',
+    blueDark: '#2997ff',
+    hairline: '#d2d2d7',
+    swim: '#FF6BA8',
+    bike: '#D4A520',
+    run: '#4DDB82'
+  };
+
+  var now=new Date(),_mk=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'),_tk=_mk+'-'+String(now.getDate()).padStart(2,'0');
+  var s=getShareStats();
+  var moActs=allHistory.filter(function(a){var sd=String(a.date||'');var d=sd.length===8?sd.slice(0,4)+'-'+sd.slice(4,6)+'-'+sd.slice(6,8):sd;return d>=_mk+'-01'&&d<=_tk;});
+  moActs.sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
+  var moDur=moActs.reduce(function(s,a){return s+(a.duration||0);},0);
+  var mSwim=moActs.filter(function(a){return a.sportType===300;}).reduce(function(s,a){return s+(a.duration||0);},0);
+  var mBike=moActs.filter(function(a){return a.sportType===200;}).reduce(function(s,a){return s+(a.duration||0);},0);
+  var mRun=moActs.filter(function(a){return a.sportType===100||a.sportType===103;}).reduce(function(s,a){return s+(a.duration||0);},0);
+  var pct=function(v,t){return t>0?Math.round(v/t*100):0;};
+  var sp=pct(mSwim,moDur),bp=pct(mBike,moDur),rp=pct(mRun,moDur);
+
+  var sc=function(st){if(st===300)return C.swim;if(st===200)return C.bike;if(st===100||st===103)return C.run;return C.inkLight;};
+  var sn=function(st){if(st===300)return 'SWIM';if(st===200)return 'BIKE';if(st===100||st===103)return 'RUN';return 'SPORT';};
+  var fmtHMS=function(sec){if(!sec)return '--:--';var h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=Math.floor(sec%60);return h>0?(h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')):(m+':'+String(s).padStart(2,'0'));};
+  var fmtD=function(d){var s=String(d||'');if(s.length===8)return s.slice(4,6)+'/'+s.slice(6,8);if(s.indexOf('-')>-1)return s.slice(5,7)+'/'+s.slice(8,10);return s;};
+  var durFmt=function(d){if(!d)return'';var h=d/3600;return h>=1?h.toFixed(1)+'h':Math.round(d/60)+'min';};
+
+  // ===== APPLE STYLE CANVAS =====
+
+  // BG: Parchment (Apple off-white)
+  x.fillStyle=C.parchment;x.fillRect(0,0,W,H);
+
+  // === TOP SECTION: Dark tile (Apple alternating tile pattern) ===
+  var darkH = 420;
+  x.fillStyle='#1d1d1f';x.fillRect(0,0,W,darkH);
+
+  // Badge pill (Apple style)
+  x.fillStyle=C.blueDark;
+  rr(x,80,56,200,36,18);x.fill();
+  x.fillStyle='#ffffff';x.font='600 15px -apple-system, "SF Pro Text", "SF Pro Display", system-ui, sans-serif';
+  x.fillText('TRI TRAINING',96,66);
+
+  // Month label on right
+  x.fillStyle=C.blueDark;x.font='400 17px -apple-system, "SF Pro Text", system-ui, sans-serif';x.textAlign='right';
+  x.fillText((now.getMonth()+1)+'/'+now.getFullYear(),W-80,66);x.textAlign='left';
+
+  // Hero headline (SF Pro Display style, tight tracking)
+  x.fillStyle='#ffffff';
+  x.font='600 48px -apple-system, "SF Pro Display", system-ui, sans-serif';
+  x.letterSpacing = '-0.5';
+  x.fillText(locale==='zh'?'\u672C\u6708\u8BAD\u7EC3\u6570\u636E':'Monthly Training',80,130);
+  x.letterSpacing = '0';
+
+  // Tagline (light weight, airy)
+  x.fillStyle='#aeaeb2';
+  x.font='300 23px -apple-system, "SF Pro Text", system-ui, sans-serif';
+  x.fillText(locale==='zh'?'\u4F60\u9009\u62E9\u4E13\u6CE8\uFF0C\u5C31\u4F1A\u6210\u957F':'What you focus on will grow.',80,172);
+
+  // === 3 STAT CARDS in dark area ===
+  var sy=220,sW=280,sH=100,sG=16,stX=(W-sW*3-sG*2)/2;
+  var stData=[[durFmt(moDur),locale==='zh'?'\u8BAD\u7EC3\u65F6\u957F':'Duration'],[String(moActs.length),locale==='zh'?'\u5B8C\u6210\u6B21\u6570':'Sessions'],[rp+'%',locale==='zh'?'\u8DD1\u6B65\u5360\u6BD4':'Run %']];
+  stData.forEach(function(si,i){
+    var sx=stX+i*(sW+sG);
+    // Card bg: slightly lighter than tile
+    x.fillStyle='rgba(255,255,255,0.08)';
+    rr(x,sx,sy,sW,sH,20);x.fill();
+    // Number: large, SF Pro Display
+    x.fillStyle='#ffffff';x.font='600 40px -apple-system, "SF Pro Display", system-ui, sans-serif';x.textAlign='center';
+    x.fillText(si[0],sx+sW/2,sy+18);
+    // Label: muted
+    x.fillStyle=C.inkLight;x.font='400 14px -apple-system, "SF Pro Text", system-ui, sans-serif';
+    x.fillText(si[1],sx+sW/2,sy+68);
+  });x.textAlign='left';
+
+  // === LIGHT TILE: Distribution ===
+  var ly=darkH+48;
+  x.fillStyle=C.ink;x.font='600 28px -apple-system, "SF Pro Display", system-ui, sans-serif';
+  x.letterSpacing = '-0.3';
+  x.fillText(locale==='zh'?'\u8FD0\u52A8\u5206\u5E03':'Sport Distribution',80,ly);
+  x.letterSpacing = '0';
+
+  // Subtitle
+  x.fillStyle=C.inkMuted;x.font='400 17px -apple-system, "SF Pro Text", system-ui, sans-serif';
+  x.fillText(locale==='zh'?'\u672C\u6708 '+moActs.length+' \u6B21\u8BAD\u7EC7':moActs+' sessions this month',80,ly+34);
+
+  // Progress bars (Apple clean style)
+  var bars=[['SWIM',sp,C.swim],['BIKE',bp,C.bike],['RUN',rp,C.run]];
+  var by0=ly+64,bh=44,bg=12,bw=W-160;
+  bars.forEach(function(b,i){
+    var by=by0+i*(bh+bg);
+    // Label row
+    x.fillStyle=C.ink;x.font='600 15px -apple-system, "SF Pro Text", system-ui, sans-serif';x.fillText(b[0],80,by);
+    // Percentage right-aligned
+    x.fillStyle=C.inkMuted;x.font='400 15px -apple-system, "SF Pro Text", system-ui, sans-serif';x.textAlign='right';
+    x.fillText(b[1]+'%',W-80,by);x.textAlign='left';
+    // Bar track (hairline bg)
+    x.fillStyle=C.hairline;rr(x,80,by+22,bw,10,5);x.fill();
+    // Bar fill (colored, rounded)
+    if(b[1]>0){
+      x.fillStyle=b[2];rr(x,80,by+22,Math.max(10,Math.round(bw*b[1]/100)),10,5);x.fill();
+    }
+  });
+
+  // === RECORDS LIST ===
+  var ry0=by0+3*(bh+bg)+48;
+  x.fillStyle=C.ink;x.font='600 24px -apple-system, "SF Pro Display", system-ui, sans-serif';
+  x.letterSpacing = '-0.2';
+  x.fillText(locale==='zh'?'\u8BAD\u7EC3\u8BB0\u5F55':'Training Records',80,ry0);
+  x.letterSpacing = '0';
+
+  if(moActs.length>0){
+    var rh=60,rg=6,rTop=ry0+36,maxR=Math.floor((H-120-rTop)/(rh+rg));
+    var showR=moActs.slice(0,maxR);
+    showR.forEach(function(act,i){
+      var ry=rTop+i*(rh+rg);
+      // Card: white with subtle border (Apple utility card)
+      x.fillStyle=C.canvas;
+      rr(x,80,ry,W-160,rh,16);x.fill();
+      // Hairline border
+      x.strokeStyle=C.hairline;x.lineWidth=1;x.stroke();
+      // Color indicator (left edge accent, not full strip)
+      x.fillStyle=sc(act.sportType);rr(x,80,ry,4,rh,[16,16,0,0]);x.fill();
+      // Date
+      x.fillStyle=C.inkMuted;x.font='400 13px -apple-system, "SF Pro Text", system-ui, sans-serif';x.fillText(fmtD(act.date),104,ry+10);
+      // Sport type badge
+      x.fillStyle=sc(act.sportType);rr(x,170,ry-2,56,22,11);x.fill();
+      x.fillStyle='#ffffff';x.font='600 11px -apple-system, "SF Pro Text", system-ui, sans-serif';x.textAlign='center';
+      x.fillText(sn(act.sportType),198,ry+3);x.textAlign='left';
+      // Duration (large, hero-style number)
+      x.fillStyle=C.ink;x.font='600 24px -apple-system, "SF Pro Display", system-ui, sans-serif';
+      x.fillText(fmtHMS(act.duration),104,ry+30);
+      // Distance on right
+      x.fillStyle=C.inkMuted;x.font='400 14px -apple-system, "SF Pro Text", system-ui, sans-serif';x.textAlign='right';
+      if(act.distance)x.fillText((act.distance/1000).toFixed(1)+' km',W-80,ry+22);
+      x.textAlign='left';
+    });
+    if(moActs.length>maxR){
+      x.fillStyle=C.inkMuted;x.font='400 14px -apple-system, "SF Pro Text", system-ui, sans-serif';x.textAlign='center';
+      x.fillText('... '+(locale==='zh'?'\u53CA\u5176\u4ED6 ':+(moActs.length-maxR)+' more'),W/2,rTop+maxR*(rh+rg)+8);
+      x.textAlign='left';
+    }
+  } else {
+    x.fillStyle=C.inkMuted;x.font='400 17px -apple-system, "SF Pro Text", system-ui, sans-serif';x.textAlign='center';
+    x.fillText(locale==='zh'?'\u6682\u65E0\u8BB0\u5F55':'No records yet',W/2,ry0+46);x.textAlign='left';
+  }
+
+  // Footer (Apple fine-print style)
+  var fy=H-56;
+  x.fillStyle=C.hairline;x.fillRect(80,fy,W-160,1);
+  x.fillStyle=C.inkMuted;x.font='400 12px -apple-system, "SF Pro Text", system-ui, sans-serif';x.textAlign='center';
+  x.fillText('github.com/QianXinyu8888/Xinyu-s-Training-Dashboard',W/2,fy+14);x.textAlign='left';
+
+  try{var dl=document.createElement('a');dl.href=c.toDataURL('image/jpeg',0.92);dl.download='\u94C1\u4E09\u8BAD\u7EC3\u672C\u6708\u6570\u636E.jpg';dl.click();}
+  catch(e){console.error(e);alert('Fail: '+e.message);}
+}
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
 }
 </script>
 </body>

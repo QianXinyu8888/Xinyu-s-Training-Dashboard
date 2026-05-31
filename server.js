@@ -1,10 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { readFileSync, readdirSync } = require('fs');
 const { join, basename } = require('path');
-const { execSync, exec } = require('child_process');
+const { execSync, execFileSync, execFile } = require('child_process');
 const { promisify } = require('util');
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 const app = express();
 const PORT = 3000;
@@ -24,16 +25,14 @@ app.get('/', (req, res) => {
   
   // Embed COROS history + weekly summary inline to survive fetch failures
   try {
-    const { execSync } = require('child_process');
-
     // Embed history
-    const histData = execSync(`node ${COROS_SCRIPT} --history`, { timeout: 30000 });
+    const histData = execFileSync('node', [COROS_SCRIPT, '--history'], { timeout: 30000, env: { ...process.env } });
     const hist = JSON.parse(histData.toString());
     const histJson = JSON.stringify(hist.activities || []).replace(/</g, '\\u003c');
     html = html.replace('let allHistory = [];', `let allHistory = ${histJson};`);
 
     // Embed weekly summary (for AE score fallback)
-    const wkData = execSync(`node ${COROS_SCRIPT} --weekly`, { timeout: 30000 });
+    const wkData = execFileSync('node', [COROS_SCRIPT, '--weekly'], { timeout: 30000, env: { ...process.env } });
     const wk = JSON.parse(wkData.toString());
     const wkJson = JSON.stringify(wk).replace(/</g, '\\u003c');
     html = html.replace('let _embeddedWeekly_ = null;', `let _embeddedWeekly_ = ${wkJson};`);
@@ -183,7 +182,7 @@ app.get('/api/coros', async (req, res) => {
   else args = 'today';
   
   try {
-    const { stdout } = await execAsync(`node ${COROS_SCRIPT} ${args}`, { timeout: 30000 });
+    const { stdout } = await execFileAsync('node', [COROS_SCRIPT, args], { timeout: 30000, env: { ...process.env } });
     const data = JSON.parse(stdout);
     res.json(data);
   } catch (err) {
