@@ -54,7 +54,21 @@
     .hdr-emoji { font-size: 1.5rem; }
     .hdr-emojis { display: flex; gap: 4px; align-items: center; }
     .hdr-emoji { font-size: 1.15rem; }
-    .hdr-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 11px; font-size: 0.72rem; font-weight: 600; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+    .hdr-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 11px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--ink-2);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.20s ease, color 0.20s ease, border-color 0.20s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s;
+    }
+    .hdr-btn:hover { background: #E8E4DE; color: var(--ink); border-color: var(--border-hi); transform: scale(1.04); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .hdr-btn:active { transform: scale(0.96); box-shadow: none; background: #DDD9D3; }
+    .hdr-btn.btn-active { background: #E8E4DE; border-color: var(--border-hi); color: var(--ink); }
     .hdr-btn-row { display: flex; flex-direction: row; gap: 6px; align-items: center; }
     .hdr-lang-row { display: flex; flex-direction: row; gap: 6px; align-items: center; }
     .hdr-date-pill { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
@@ -103,10 +117,10 @@
       border-radius: var(--r-lg);
       padding: 14px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-      transition: all 0.15s;
+      transition: box-shadow 0.22s cubic-bezier(0.34,1.56,0.64,1), transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
     }
     .stat-body { flex: 1; }
-    .stat-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .stat-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.10); transform: translateY(-2px); }
     .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .stat-label { font-size: 0.78rem; color: var(--ink-2); font-weight: 600; }
     .stat-icon { font-size: 1.25rem; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
@@ -155,9 +169,10 @@
       font-size: 0.74rem; font-weight: 600; color: var(--ink-2);
       background: var(--bg); border: 1px solid var(--border);
       border-radius: 8px; padding: 5px 11px; cursor: pointer;
-      transition: all 0.15s;
+      transition: background 0.18s, border-color 0.18s, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s;
     }
-    .card-btn:hover { background: var(--surface); border-color: var(--border-hi); }
+    .card-btn:hover { background: var(--surface); border-color: var(--border-hi); transform: scale(1.04); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .card-btn:active { transform: scale(0.95); }
 
     /* ── Today Detail (Left) ── */
     .today-detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -206,8 +221,8 @@
       transition: all 0.15s;
       display: flex; flex-direction: column; align-items: center;
     }
-    .cal-day:hover { border-color: var(--border-hi); background: var(--surface); }
-    .cal-day:active { transform: scale(0.92); box-shadow: 0 6px 20px rgba(255,107,53,0.2); border-color: var(--accent); }
+    .cal-day:hover { border-color: var(--border-hi); background: var(--surface); box-shadow: 0 0 0 3px rgba(255,107,53,0.12), 0 2px 8px rgba(0,0,0,0.06); transform: translateY(-1px); }
+    .cal-day:active { transform: scale(0.93) translateY(0); box-shadow: 0 6px 20px rgba(255,107,53,0.2); border-color: var(--accent); }
 
     /* ── Fireworks ── */
     .fw-canvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999; }
@@ -298,19 +313,34 @@
     .detail-act-meta { font-size: 0.75rem; color: var(--ink-3); }
 
     /* ── Modals ── */
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .modal-content { background: #fff; border-radius: 16px; max-height: 90vh; overflow-y: auto; width: 100%; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .modal.modal-open { opacity: 1; pointer-events: auto; }
+    .modal-content {
+      background: #fff;
+      border-radius: 16px;
+      max-height: 90vh;
+      overflow-y: auto;
+      width: 100%;
+      opacity: 0;
+      transform: scale(0.90) translateY(20px);
+      transition: opacity 0.30s cubic-bezier(0.34,1.35,0.64,1), transform 0.30s cubic-bezier(0.34,1.35,0.64,1);
+    }
+    .modal.modal-open .modal-content { opacity: 1; transform: scale(1) translateY(0); }
     .pb-modal { max-width: 680px; padding: 28px; }
     .share-modal { max-width: 580px; padding: 28px; }
     .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
-    .modal-close { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--ink-3); padding: 4px 8px; border-radius: 6px; }
-    .modal-close:hover { background: var(--surface); }
+    .modal-close {
+      background: none; border: none; font-size: 1.1rem; cursor: pointer;
+      color: var(--ink-3); padding: 4px 8px; border-radius: 6px;
+      transition: background 0.15s, color 0.15s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .modal-close:hover { background: var(--surface); color: var(--ink); transform: rotate(90deg) scale(1.1); }
 
     /* PB Tabs */
     .pb-tabs, .share-tabs { display: flex; gap: 4px; margin-bottom: 18px; background: var(--surface); border-radius: 10px; padding: 4px; }
-    .pb-tab, .share-tab { flex: 1; padding: 8px 0; border: none; background: none; border-radius: 8px; font-size: 0.82rem; font-weight: 600; color: var(--ink-3); cursor: pointer; transition: all 0.2s; }
-    .pb-tab.active, .share-tab.active { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .pb-tab, .share-tab { flex: 1; padding: 8px 0; border: none; background: none; border-radius: 8px; font-size: 0.82rem; font-weight: 600; color: var(--ink-3); cursor: pointer; transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+    .pb-tab.active, .share-tab.active { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.1); transform: scale(1.03); }
 
     /* PB Form */
     .pb-form { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 18px; }
@@ -318,19 +348,25 @@
     .pb-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .pb-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; background: #fff; color: var(--ink); outline: none; transition: border 0.2s; }
     .pb-input:focus { border-color: #C07A5A; }
-    .pb-submit-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--ink); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-    .pb-submit-btn:hover { opacity: 0.85; }
+    .pb-submit-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--ink); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.18s, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s; }
+    .pb-submit-btn:hover { opacity: 0.88; transform: scale(1.02); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    .pb-submit-btn:active { transform: scale(0.97); }
 
     /* PB Records List */
     .pb-records-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
-    .pb-record-item { background: var(--surface); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+    .pb-record-item {
+      background: var(--surface); border-radius: 10px; padding: 12px;
+      display: flex; align-items: center; gap: 10px;
+      transition: box-shadow 0.18s cubic-bezier(0.34,1.56,0.64,1), transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .pb-record-item:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.08); transform: translateX(4px); }
     .pb-record-item .pb-record-icon { font-size: 1.2rem; }
     .pb-record-item .pb-record-info { flex: 1; }
     .pb-record-item .pb-record-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
     .pb-record-item .pb-record-meta { font-size: 0.72rem; color: var(--ink-3); margin-top: 2px; }
     .pb-record-item .pb-record-total { font-size: 0.9rem; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
-    .pb-record-item .pb-record-del { background: none; border: none; color: #e74c3c; font-size: 0.75rem; cursor: pointer; padding: 4px 6px; border-radius: 4px; }
-    .pb-record-item .pb-record-del:hover { background: #fde8e8; }
+    .pb-record-item .pb-record-del { background: none; border: none; color: #e74c3c; font-size: 0.75rem; cursor: pointer; padding: 4px 6px; border-radius: 4px; transition: background 0.15s, transform 0.15s cubic-bezier(0.34,1.56,0.64,1); }
+    .pb-record-item .pb-record-del:hover { background: #fde8e8; transform: scale(1.15); }
 
     /* PB Grid */
     .pb-pbs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -361,16 +397,33 @@
 
     /* Share Actions */
     .share-actions { display: flex; gap: 8px; }
-    .share-download-btn { flex: 1; padding: 11px; background: var(--ink); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-    .share-download-btn:hover { opacity: 0.85; }
+    .share-download-btn { flex: 1; padding: 11px; background: var(--ink); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.18s, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s; }
+    .share-download-btn:hover { opacity: 0.88; transform: scale(1.02); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    .share-download-btn:active { transform: scale(0.97); }
 
     /* ── Animations ── */
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    .fu { animation: fadeUp 0.35s ease both; }
-    .fu-1 { animation-delay: 0.07s; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes tabFade {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; max-height: 0; transform: translateY(-6px); }
+      to   { opacity: 1; max-height: 400px; transform: translateY(0); }
+    }
+    .fu { animation: fadeUp 0.48s cubic-bezier(0.34,1.25,0.64,1) both; }
+    .fu-1 { animation-delay: 0.06s; }
     .fu-2 { animation-delay: 0.14s; }
-    .fu-3 { animation-delay: 0.21s; }
-    .fu-4 { animation-delay: 0.28s; }
+    .fu-3 { animation-delay: 0.22s; }
+    .fu-4 { animation-delay: 0.30s; }
+    .tab-animate { animation: tabFade 0.22s ease both; }
+    .hist-detail-animate {
+      animation: slideDown 0.30s cubic-bezier(0.34,1.2,0.64,1) both;
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -389,14 +442,14 @@
             <button id="langToggle" onclick="toggleLang()" class="hdr-btn">EN ↔ ZH</button>
           </div>
           <div class="hdr-btn-row">
-            <button id="shareBtn" onclick="openShareCard()" class="hdr-btn">📤 分享</button>
+            <button id="shareBtn" onclick="openShareCard()" class="hdr-btn">📤 <span data-i18n="shareBtn">分享</span></button>
           </div>
           <div class="hdr-btn-row">
             <div id="syncStatus" style="font-size:0.62rem;color:var(--ink-3);min-height:26px;display:none;line-height:26px;margin-right:4px;white-space:nowrap"></div>
             <button id="refreshBtn" onclick="refreshData()" class="hdr-btn">⇄ <span data-i18n="syncData">同步数据</span></button>
           </div>
           <div class="hdr-btn-row">
-            <button id="pbBtn" onclick="openPBBtn()" class="hdr-btn">🏆 我的历史赛事</button>
+            <button id="pbBtn" onclick="openPBBtn()" class="hdr-btn">🏆 <span data-i18n="hdrPB">我的历史赛事</span></button>
           </div>
           <div class="hdr-lang-row">
             <span id="clock" style="color:var(--ink-3);font-size:0.8rem;white-space:nowrap;"></span>
@@ -417,39 +470,39 @@
     <div id="pbModal" class="modal" style="display:none">
       <div class="modal-content pb-modal">
         <div class="modal-header">
-          <h2 class="modal-title">🏆 我的历史赛事</h2>
+          <h2 class="modal-title">🏆 <span data-i18n="hdrPB">我的历史赛事</span></h2>
           <button class="modal-close" onclick="closePBModal()">✕</button>
         </div>
         <div class="pb-tabs">
-          <button class="pb-tab" onclick="switchPBTab('pbs')" id="pbTabPBs">我的 PB</button>
-          <button class="pb-tab active" onclick="switchPBTab('records')" id="pbTabRecords">记录</button>
+          <button class="pb-tab" onclick="switchPBTab('pbs')" id="pbTabPBs" data-i18n="pbTabPBs">我的 PB</button>
+          <button class="pb-tab active" onclick="switchPBTab('records')" id="pbTabRecords" data-i18n="pbTabRecords">记录</button>
         </div>
         <!-- Records Tab -->
         <div id="pbTabContentRecords">
           <div class="pb-form">
-            <div class="pb-form-title">添加比赛记录</div>
+            <div class="pb-form-title" data-i18n="pbFormTitle">添加比赛记录</div>
             <div class="pb-form-grid">
-              <input id="pbName" class="pb-input" placeholder="比赛名称，如：滴水湖标铁" />
+              <input id="pbName" class="pb-input" data-i18n-placeholder="pbNamePlaceholder" placeholder="比赛名称，如：滴水湖标铁" />
               <input id="pbDate" class="pb-input" type="date" />
               <select id="pbDist" class="pb-input" onchange="onPBDistChange()">
-                <option value="">选择距离</option>
-                <option value="sprint">迷你铁三（约标铁距离的1/4）</option>
-                <option value="olympic">标铁（1.5km游泳+40km骑行+10km跑步）</option>
-                <option value="half">半程大铁（1.9km+90km+21km）</option>
-                <option value="full">全程大铁（3.8km+180km+42km）</option>
-                <option value="10k">10公里跑步</option>
-                <option value="5k">5公里跑步</option>
-                <option value="21k">半程马拉松</option>
-                <option value="42k">全程马拉松</option>
+                <option value="" data-i18n="pbSelectDist">选择距离</option>
+                <option value="sprint" data-i18n="sprintDist">迷你铁三（约标铁距离的1/4）</option>
+                <option value="olympic" data-i18n="olympicDist">标铁（1.5km游泳+40km骑行+10km跑步）</option>
+                <option value="half" data-i18n="halfDist">半程大铁（1.9km+90km+21km）</option>
+                <option value="full" data-i18n="fullDist">全程大铁（3.8km+180km+42km）</option>
+                <option value="10k" data-i18n="dist10k">10公里跑步</option>
+                <option value="5k" data-i18n="dist5k">5公里跑步</option>
+                <option value="21k" data-i18n="dist21k">半程马拉松</option>
+                <option value="42k" data-i18n="dist42k">全程马拉松</option>
               </select>
-              <input id="pbRun" class="pb-input" placeholder="跑步 时间，如 00:48:00" />
+              <input id="pbRun" class="pb-input" data-i18n-placeholder="pbRunPlaceholder" placeholder="跑步 时间，如 00:48:00" />
               <div id="pbTriFields" style="display:contents">
-                <input id="pbSwim" class="pb-input" placeholder="游泳 时间，如 00:25:30" />
-                <input id="pbBike" class="pb-input" placeholder="骑行 时间，如 01:15:00" />
+                <input id="pbSwim" class="pb-input" data-i18n-placeholder="pbSwimPlaceholder" placeholder="游泳 时间，如 00:25:30" />
+                <input id="pbBike" class="pb-input" data-i18n-placeholder="pbBikePlaceholder" placeholder="骑行 时间，如 01:15:00" />
               </div>
-              <input id="pbTotal" class="pb-input" placeholder="总时间（必填），如 03:02:14" />
+              <input id="pbTotal" class="pb-input" data-i18n-placeholder="pbTotalPlaceholder" placeholder="总时间（必填），如 03:02:14" />
             </div>
-            <button class="pb-submit-btn" onclick="addPBRecord()">添加记录</button>
+            <button class="pb-submit-btn" onclick="addPBRecord()" data-i18n="pbSubmitBtn">添加记录</button>
             <div id="pbFormError" style="color:#e74c3c;font-size:0.8rem;margin-top:6px;display:none"></div>
           </div>
           <div class="pb-records-list" id="pbRecordsList"></div>
@@ -465,15 +518,15 @@
     <div id="shareModal" class="modal" style="display:none">
       <div class="modal-content share-modal">
         <div class="modal-header">
-          <h2 class="modal-title">📤 生成分享图</h2>
+          <h2 class="modal-title">📤 <span data-i18n="shareTitle">生成分享图</span></h2>
           <button class="modal-close" onclick="closeShareModal()">✕</button>
         </div>
         <div class="share-tabs">
-          <button class="share-tab active" id="shareTabMonth">本月数据</button>
+          <button class="share-tab active" id="shareTabMonth" data-i18n="shareMonth">本月数据</button>
         </div>
         <div id="shareCardPreview"></div>
         <div class="share-actions">
-          <button class="share-download-btn" onclick="downloadShareCard()">下载图片</button>
+          <button class="share-download-btn" onclick="downloadShareCard()" data-i18n="shareDownload">下载图片</button>
         </div>
       </div>
     </div>
@@ -616,6 +669,8 @@ const I18N = {
     corosWeak: 'COROS · 需加强',
     noActivityYet: '还没有训练记录',
     noHistory: '暂无历史记录',
+    shareBtn: '分享',
+    hdrPB: '我的历史赛事',
     syncData: '同步数据',
     syncPlans: '拉取训练计划…',
     syncWeekly: '拉取本周评分…',
@@ -629,6 +684,33 @@ const I18N = {
     shareWeek: '本周战报',
     shareMonth: '本月数据',
     shareDownload: '下载图片',
+    pbFormTitle: '添加比赛记录',
+    pbNamePlaceholder: '比赛名称，如：滴水湖标铁',
+    pbSelectDist: '选择距离',
+    pbRunPlaceholder: '跑步 时间，如 00:48:00',
+    pbSwimPlaceholder: '游泳 时间，如 00:25:30',
+    pbBikePlaceholder: '骑行 时间，如 01:15:00',
+    pbTotalPlaceholder: '总时间（必填），如 03:02:14',
+    pbSubmitBtn: '添加记录',
+    pbErrTotal: '请填写总时间',
+    pbErrDist: '请选择距离',
+    sprintDist: '迷你铁三（约标铁距离的1/4）',
+    olympicDist: '标铁（1.5km游泳+40km骑行+10km跑步）',
+    halfDist: '半程大铁（1.9km+90km+21km）',
+    fullDist: '全程大铁（3.8km+180km+42km）',
+    dist10k: '10公里跑步',
+    dist5k: '5公里跑步',
+    dist21k: '半程马拉松',
+    dist42k: '全程马拉松',
+    pbNoRecords: '暂无比赛记录，点击上方表单添加',
+    pbNoPBs: '暂无 PB 数据',
+    pbUnknownRace: '未知比赛',
+    pbErrTimeFmt: '时间格式错误，请使用 HH:MM:SS 格式',
+    shareCardBadge: '🏊‍♀️🚴‍♀️🏃‍♂️ 铁三训练',
+    shareCardDurLabel: '训练时长',
+    shareCardCountLabel: '完成次数',
+    shareCardBikeLabel: '骑行占比',
+    shareCardSportsLabel: '运动类型分布',
     statDuration: '训练时长',
     statCount: '完成次数',
     statSportMix: '运动类型分布',
@@ -679,6 +761,8 @@ const I18N = {
     corosWeak: 'COROS · Needs Work',
     noActivityYet: 'No training records yet',
     noHistory: 'No history records',
+    shareBtn: 'Share',
+    hdrPB: 'My History',
     syncData: 'Sync Data',
     syncPlans: 'Fetching plans…',
     syncWeekly: 'Fetching weekly data…',
@@ -692,6 +776,33 @@ const I18N = {
     shareWeek: "This Week's Report",
     shareMonth: 'Monthly Data',
     shareDownload: 'Download Image',
+    pbFormTitle: 'Add Race Record',
+    pbNamePlaceholder: 'Race name, e.g. DISHUI OLYMPIC',
+    pbSelectDist: 'Select distance',
+    pbRunPlaceholder: 'Run time, e.g. 00:48:00',
+    pbSwimPlaceholder: 'Swim time, e.g. 00:25:30',
+    pbBikePlaceholder: 'Bike time, e.g. 01:15:00',
+    pbTotalPlaceholder: 'Total time (required), e.g. 03:02:14',
+    pbSubmitBtn: 'Add Record',
+    pbErrTotal: 'Please enter total time',
+    pbErrDist: 'Please select distance',
+    sprintDist: 'Sprint (~1/4 Olympic)',
+    olympicDist: 'Olympic (1.5km swim+40km bike+10km run)',
+    halfDist: 'Half Ironman (1.9km+90km+21km)',
+    fullDist: 'Full Ironman (3.8km+180km+42km)',
+    dist10k: '10km Run',
+    dist5k: '5km Run',
+    dist21k: 'Half Marathon',
+    dist42k: 'Full Marathon',
+    pbNoRecords: 'No race records yet. Add via the form above.',
+    pbNoPBs: 'No PB data yet.',
+    pbUnknownRace: 'Unknown Race',
+    pbErrTimeFmt: 'Invalid time format. Use HH:MM:SS.',
+    shareCardBadge: '🏊‍♀️🚴‍♀️🏃‍♂️ Triathlon Training',
+    shareCardDurLabel: 'Duration',
+    shareCardCountLabel: 'Sessions',
+    shareCardBikeLabel: 'Bike %',
+    shareCardSportsLabel: 'Sport Mix',
     statDuration: 'Duration',
     statCount: 'Sessions',
     statSportMix: 'Sport Mix',
@@ -717,6 +828,8 @@ function t(key, vars) {
 }
 
 function toggleLang() {
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.classList.add('btn-active');
   locale = locale === 'zh' ? 'en' : 'zh';
   localStorage.setItem('dashLocale', locale);
   applyI18n();
@@ -731,10 +844,20 @@ function toggleLang() {
   renderWeek(allPlans, todayKey, allActivities);
   renderRecent(allHistory.slice(0, 6));
   updateHeader();
+  // 300ms 后移除激活状态，让颜色变化可见
+  if (btn) setTimeout(function(){ btn.classList.remove('btn-active'); }, 300);
 }
 
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = t(key);
+  });
+  document.querySelectorAll('select option[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     el.textContent = t(key);
   });
@@ -1121,10 +1244,20 @@ function toggleHistDetail(i){
   const item=el.parentElement;
   const arrow=item.querySelector('.hist-arrow');
   if(!el) return;
-  const isOpen=el.style.display==='block';
-  el.style.display=isOpen?'none':'block';
-  arrow.textContent=isOpen?'▸':'▾';
-  arrow.style.transform=isOpen?'':'rotate(0deg)';
+  const isOpen=el.classList.contains('hist-detail-animate');
+  if(isOpen){
+    el.style.maxHeight='0';
+    el.style.opacity='0';
+    el.classList.remove('hist-detail-animate');
+    arrow.textContent='▸';
+    arrow.style.transform='';
+  } else {
+    el.style.maxHeight='400px';
+    el.style.opacity='1';
+    el.classList.add('hist-detail-animate');
+    arrow.textContent='▾';
+    arrow.style.transform='rotate(0deg)';
+  }
 }
 
 function backToPlan(){
@@ -1234,16 +1367,15 @@ loadData();
 
 function refreshData() {
   const btn = document.getElementById('refreshBtn');
-  if (btn) { btn.innerHTML = '⏳ <span data-i18n="syncData">' + t('syncData') + '</span>'; btn.disabled = true; }
+  if (btn) { btn.classList.add('btn-active'); btn.disabled = true; }
   allHistory = [];
   allPlans = [];
   allActivities = [];
   setSyncStatus(locale==='zh' ? '拉取训练计划…' : 'Fetching plans…');
   loadData().then(() => {
-    if (btn) { btn.innerHTML = '⇄ <span data-i18n="syncData">' + t('syncData') + '</span>'; btn.disabled = false; }
+    if (btn) { btn.classList.remove('btn-active'); btn.disabled = false; }
   }).catch(() => {
-    // loadData internal catch already showed error; just restore button
-    if (btn) { btn.innerHTML = '⇄ <span data-i18n="syncData">' + t('syncData') + '</span>'; btn.disabled = false; }
+    if (btn) { btn.classList.remove('btn-active'); btn.disabled = false; }
   });
 }
 
@@ -1251,10 +1383,12 @@ function refreshData() {
 // PB Records
 // ═══════════════════════════════════════════
 const PB_KEY = 'duoduo_pb_records';
-const DISTANCE_LABELS = {
-  sprint: '迷你铁三', olympic: '标铁', half: '半程大铁', full: '全程大铁',
-  '10k': '10公里', '5k': '5公里', '21k': '半马', '42k': '全马'
-};
+function getDistanceLabels() {
+  return {
+    sprint: t('sprintDist'), olympic: t('olympicDist'), half: t('halfDist'), full: t('fullDist'),
+    '10k': t('dist10k'), '5k': t('dist5k'), '21k': t('dist21k'), '42k': t('dist42k')
+  };
+}
 const DISTANCE_ORDER = ['5k','10k','21k','42k','sprint','olympic','half','full'];
 
 function getPBRecords() {
@@ -1290,15 +1424,22 @@ function secToTime(s) {
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
-function openPBBtn() { renderPBModal(); switchPBTab('pbs'); document.getElementById('pbModal').style.display='flex'; }
-function closePBModal() { document.getElementById('pbModal').style.display='none'; }
+function openPBBtn() { renderPBModal(); switchPBTab('pbs'); var m=document.getElementById('pbModal'); m.style.display='flex'; requestAnimationFrame(function(){ m.classList.add('modal-open'); }); }
+function closePBModal() { var m=document.getElementById('pbModal'); m.classList.remove('modal-open'); setTimeout(function(){ m.style.display='none'; }, 300); }
 
 function switchPBTab(tab) {
   document.getElementById('pbTabRecords').classList.toggle('active', tab==='records');
   document.getElementById('pbTabPBs').classList.toggle('active', tab==='pbs');
-  document.getElementById('pbTabContentRecords').style.display = tab==='records' ? '' : 'none';
-  document.getElementById('pbTabContentPBs').style.display = tab==='pbs' ? '' : 'none';
-  if (tab === 'pbs') renderPBsTab();
+  var rc = document.getElementById('pbTabContentRecords');
+  var pc = document.getElementById('pbTabContentPBs');
+  if (tab === 'records') {
+    rc.style.display = ''; rc.classList.add('tab-animate');
+    pc.style.display = 'none'; pc.classList.remove('tab-animate');
+  } else {
+    pc.style.display = ''; pc.classList.add('tab-animate');
+    rc.style.display = 'none'; rc.classList.remove('tab-animate');
+    renderPBsTab();
+  }
 }
 
 function onPBDistChange() {
@@ -1315,16 +1456,16 @@ function renderPBModal() {
   const records = getPBRecords();
   const container = document.getElementById('pbRecordsList');
   if (records.length === 0) {
-    container.innerHTML = '<div style="text-align:center;color:var(--ink-3);font-size:0.82rem;padding:20px 0">暂无比赛记录，点击上方表单添加</div>';
+    container.innerHTML = '<div style="text-align:center;color:var(--ink-3);font-size:0.82rem;padding:20px 0">' + t('pbNoRecords') + '</div>';
     return;
   }
   container.innerHTML = records.slice().reverse().map(r => {
-    const distLabel = DISTANCE_LABELS[r.dist] || r.dist;
+    const distLabel = getDistanceLabels()[r.dist] || r.dist;
     const dateStr = r.date ? r.date.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$2/$3') : '';
     return `<div class="pb-record-item">
       <div class="pb-record-icon">${r.dist === 'full' ? '🏆' : r.dist === 'half' ? '🎖️' : '🏅'}</div>
       <div class="pb-record-info">
-        <div class="pb-record-name">${r.name || '未知比赛'}</div>
+        <div class="pb-record-name">${r.name || t('pbUnknownRace')}</div>
         <div class="pb-record-meta">${distLabel} · ${dateStr}</div>
       </div>
       <div class="pb-record-total">${secToTime(r.totalSec)}</div>
@@ -1339,12 +1480,12 @@ function renderPBsTab() {
   const container = document.getElementById('pbPBsGrid');
   const hasAny = DISTANCE_ORDER.some(d => pbs[d]);
   if (!hasAny) {
-    container.innerHTML = '<div style="text-align:center;color:var(--ink-3);font-size:0.82rem;padding:20px 0">暂无 PB 数据</div>';
+    container.innerHTML = '<div style="text-align:center;color:var(--ink-3);font-size:0.82rem;padding:20px 0">' + t('pbNoPBs') + '</div>';
     return;
   }
   container.innerHTML = DISTANCE_ORDER.filter(d => pbs[d]).map(d => {
     const r = pbs[d];
-    const distLabel = DISTANCE_LABELS[d] || d;
+    const distLabel = getDistanceLabels()[d] || d;
     const dateStr = r.date ? r.date.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$2/$3') : '';
     return `<div class="pb-card">
       <div class="pb-card-dist">${distLabel}</div>
@@ -1361,10 +1502,10 @@ function addPBRecord() {
   const dist = document.getElementById('pbDist').value;
   const total = document.getElementById('pbTotal').value.trim();
   const errorEl = document.getElementById('pbFormError');
-  if (!total) { errorEl.textContent = '请填写总时间'; errorEl.style.display = ''; return; }
-  if (!dist) { errorEl.textContent = '请选择距离'; errorEl.style.display = ''; return; }
+  if (!total) { errorEl.textContent = t('pbErrTotal'); errorEl.style.display = ''; return; }
+  if (!dist) { errorEl.textContent = t('pbErrDist'); errorEl.style.display = ''; return; }
   const totalSec = timeToSec(total);
-  if (!totalSec) { errorEl.textContent = '时间格式错误，请使用 HH:MM:SS 格式'; errorEl.style.display = ''; return; }
+  if (!totalSec) { errorEl.textContent = t('pbErrTimeFmt'); errorEl.style.display = ''; return; }
   errorEl.style.display = 'none';
   const records = getPBRecords();
   records.push({
@@ -1390,11 +1531,8 @@ function deletePB(id) {
 // ═══════════════════════════════════════════
 // Share Card
 // ═══════════════════════════════════════════
-function openShareCard() {
-  renderShareCard();
-  document.getElementById('shareModal').style.display = 'flex';
-}
-function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
+function openShareCard() { renderShareCard(); var m=document.getElementById('shareModal'); m.style.display='flex'; requestAnimationFrame(function(){ m.classList.add('modal-open'); }); }
+function closeShareModal() { var m=document.getElementById('shareModal'); m.classList.remove('modal-open'); setTimeout(function(){ m.style.display='none'; }, 300); }
 
 function getWeekBounds() {
   const now = new Date();
@@ -1471,27 +1609,27 @@ function renderShareCard() {
   const cardHTML = `
     <div class="share-card-inner">
       <div class="share-card-header">
-        <span class="share-card-badge">🏊‍♀️🚴‍♀️🏃‍♂️ 铁三训练</span>
+        <span class="share-card-badge">${t('shareCardBadge')}</span>
         <span class="share-card-week">${monthLabel}</span>
       </div>
-      <div class="share-card-title">本月数据</div>
+      <div class="share-card-title">${t('shareMonth')}</div>
       <div class="share-card-stats">
         <div class="share-stat">
           <div class="share-stat-num">${dur}</div>
-          <div class="share-stat-label">训练时长</div>
+          <div class="share-stat-label">${t('shareCardDurLabel')}</div>
         </div>
         <div class="share-stat">
           <div class="share-stat-num">${count}</div>
-          <div class="share-stat-label">完成次数</div>
+          <div class="share-stat-label">${t('shareCardCountLabel')}</div>
         </div>
         <div class="share-stat">
           <div class="share-stat-num">${bikePct}%</div>
-          <div class="share-stat-label">骑行占比</div>
+          <div class="share-stat-label">${t('shareCardBikeLabel')}</div>
         </div>
       </div>
       ${moDur > 0 ? `
       <div class="share-card-sports">
-        <div class="share-card-sport-label">运动类型分布</div>
+        <div class="share-card-sport-label">${t('shareCardSportsLabel')}</div>
         <div class="share-bar-row">
           <div class="share-bar-label">🏊</div>
           <div class="share-bar"><div class="share-bar-fill" style="width:${swimPct}%;background:#FF6BA8"></div></div>
