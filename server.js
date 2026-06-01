@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { readFileSync, readdirSync } = require('fs');
+const { readFileSync, readdirSync, statSync } = require('fs');
 const { join, basename } = require('path');
 const { execSync, execFileSync, execFile } = require('child_process');
 const { promisify } = require('util');
@@ -140,19 +140,31 @@ app.get('/api/course', (req, res) => {
 // API: 获取最新计划
 app.get('/api/plans', (req, res) => {
   try {
+    // 按修改时间降序排序（最新文件优先）
     const files = readdirSync(PLANS_DIR)
       .filter(f => f.endsWith('.ics'))
-      .sort()
-      .reverse();
+      .sort((a, b) => {
+        const tA = statSync(join(PLANS_DIR, a)).mtimeMs;
+        const tB = statSync(join(PLANS_DIR, b)).mtimeMs;
+        return tB - tA; // 最新文件优先
+      });
     
-    const allEvents = [];
-    
-    for (const file of files.slice(0, 4)) {
+    // 去重：同一天只保留最新文件的事件
+    const latestByDate = {};
+    for (const file of files) {
       const filePath = join(PLANS_DIR, file);
       const content = readFileSync(filePath, 'utf8');
       const events = parseICS(content);
-      allEvents.push(...events.map(e => ({ ...e, _file: file })));
+      for (const ev of events) {
+        // 用 DTSTART 提取日期键（兼容 VALUE=DATE 和 DATE-TIME 格式）
+        const dateStr = String(ev.DTSTART || '').slice(0, 8); // YYYYMMDD
+        if (!latestByDate[dateStr]) {
+          latestByDate[dateStr] = { ...ev, _file: file };
+        }
+      }
     }
+    
+    const allEvents = Object.values(latestByDate);
     
     // 按日期排序
     allEvents.sort((a, b) => {
