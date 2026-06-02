@@ -326,7 +326,10 @@
       transition: opacity 0.30s cubic-bezier(0.34,1.35,0.64,1), transform 0.30s cubic-bezier(0.34,1.35,0.64,1);
     }
     .modal.modal-open .modal-content { opacity: 1; transform: scale(1) translateY(0); }
-    .pb-modal { max-width: 680px; padding: 28px; }
+    .pb-modal { max-width: 680px; padding: 28px; max-height: 85vh; overflow-y: auto; }
+    /* Toast */
+    .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(0); background: #1d1d1f; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; z-index: 100000; opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-8px); }
     .share-modal { max-width: 580px; padding: 28px; }
     .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
@@ -353,7 +356,7 @@
     .pb-submit-btn:active { transform: scale(0.97); }
 
     /* PB Records List */
-    .pb-records-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
+    .pb-records-list { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
     .pb-record-item {
       background: var(--surface); border-radius: 10px; padding: 12px;
       display: flex; align-items: center; gap: 10px;
@@ -474,11 +477,15 @@
           <button class="modal-close" onclick="closePBModal()">✕</button>
         </div>
         <div class="pb-tabs">
-          <button class="pb-tab" onclick="switchPBTab('pbs')" id="pbTabPBs" data-i18n="pbTabPBs">我的 PB</button>
-          <button class="pb-tab active" onclick="switchPBTab('records')" id="pbTabRecords" data-i18n="pbTabRecords">记录</button>
+          <button class="pb-tab active" onclick="switchPBTab('records')" id="pbTabRecords" data-i18n="pbTabRecords">我的历史赛事</button>
+          <button class="pb-tab" onclick="switchPBTab('add')" id="pbTabAdd" data-i18n="pbTabAdd">添加记录</button>
         </div>
         <!-- Records Tab -->
         <div id="pbTabContentRecords">
+          <div class="pb-records-list" id="pbRecordsList"></div>
+        </div>
+        <!-- Add Tab -->
+        <div id="pbTabContentAdd" style="display:none">
           <div class="pb-form">
             <div class="pb-form-title" data-i18n="pbFormTitle">添加比赛记录</div>
             <div class="pb-form-grid">
@@ -505,11 +512,6 @@
             <button class="pb-submit-btn" onclick="addPBRecord()" data-i18n="pbSubmitBtn">添加记录</button>
             <div id="pbFormError" style="color:#e74c3c;font-size:0.8rem;margin-top:6px;display:none"></div>
           </div>
-          <div class="pb-records-list" id="pbRecordsList"></div>
-        </div>
-        <!-- PBs Tab -->
-        <div id="pbTabContentPBs" style="display:none">
-          <div class="pb-pbs-grid" id="pbPBsGrid"></div>
         </div>
       </div>
     </div>
@@ -678,8 +680,8 @@ const I18N = {
     syncDone: '同步完成 ✓',
     syncFailed: '同步失败，请重试',
     pbTitle: 'PB 记录',
-    pbTabRecords: '记录',
-    pbTabPBs: '我的 PB',
+    pbTabRecords: '我的历史赛事',
+    pbTabAdd: '添加记录',
     shareTitle: '生成分享图',
     shareWeek: '本周战报',
     shareMonth: '本月数据',
@@ -694,6 +696,7 @@ const I18N = {
     pbSubmitBtn: '添加记录',
     pbErrTotal: '请填写总时间',
     pbErrDist: '请选择距离',
+    pbAddSuccess: '✅ 记录添加成功！',
     sprintDist: '迷你铁三（约标铁距离的1/4）',
     olympicDist: '标铁（1.5km游泳+40km骑行+10km跑步）',
     halfDist: '半程大铁（1.9km+90km+21km）',
@@ -703,7 +706,7 @@ const I18N = {
     dist21k: '半程马拉松',
     dist42k: '全程马拉松',
     pbNoRecords: '暂无比赛记录，点击上方表单添加',
-    pbNoPBs: '暂无 PB 数据',
+    pbNoPBs: '暂无历史赛事记录',
     pbUnknownRace: '未知比赛',
     pbErrTimeFmt: '时间格式错误，请使用 HH:MM:SS 格式',
     shareCardBadge: '🏊‍♀️🚴‍♀️🏃‍♂️ 铁三训练',
@@ -770,8 +773,8 @@ const I18N = {
     syncDone: 'Synced ✓',
     syncFailed: 'Sync failed',
     pbTitle: 'PB Records',
-    pbTabRecords: 'Records',
-    pbTabPBs: 'My PBs',
+    pbTabRecords: 'Race History',
+    pbTabAdd: 'Add Record',
     shareTitle: 'Generate Share Card',
     shareWeek: "This Week's Report",
     shareMonth: 'Monthly Data',
@@ -786,6 +789,7 @@ const I18N = {
     pbSubmitBtn: 'Add Record',
     pbErrTotal: 'Please enter total time',
     pbErrDist: 'Please select distance',
+    pbAddSuccess: '✅ Record added successfully!',
     sprintDist: 'Sprint (~1/4 Olympic)',
     olympicDist: 'Olympic (1.5km swim+40km bike+10km run)',
     halfDist: 'Half Ironman (1.9km+90km+21km)',
@@ -795,7 +799,7 @@ const I18N = {
     dist21k: 'Half Marathon',
     dist42k: 'Full Marathon',
     pbNoRecords: 'No race records yet. Add via the form above.',
-    pbNoPBs: 'No PB data yet.',
+    pbNoPBs: 'No race history yet.',
     pbUnknownRace: 'Unknown Race',
     pbErrTimeFmt: 'Invalid time format. Use HH:MM:SS.',
     shareCardBadge: '🏊‍♀️🚴‍♀️🏃‍♂️ Triathlon Training',
@@ -1424,21 +1428,20 @@ function secToTime(s) {
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
-function openPBBtn() { renderPBModal(); switchPBTab('pbs'); var m=document.getElementById('pbModal'); m.style.display='flex'; requestAnimationFrame(function(){ m.classList.add('modal-open'); }); }
+function openPBBtn() { renderPBModal(); switchPBTab('records'); var m=document.getElementById('pbModal'); m.style.display='flex'; requestAnimationFrame(function(){ m.classList.add('modal-open'); }); }
 function closePBModal() { var m=document.getElementById('pbModal'); m.classList.remove('modal-open'); setTimeout(function(){ m.style.display='none'; }, 300); }
 
 function switchPBTab(tab) {
   document.getElementById('pbTabRecords').classList.toggle('active', tab==='records');
-  document.getElementById('pbTabPBs').classList.toggle('active', tab==='pbs');
+  document.getElementById('pbTabAdd').classList.toggle('active', tab==='add');
   var rc = document.getElementById('pbTabContentRecords');
-  var pc = document.getElementById('pbTabContentPBs');
+  var ac = document.getElementById('pbTabContentAdd');
   if (tab === 'records') {
     rc.style.display = ''; rc.classList.add('tab-animate');
-    pc.style.display = 'none'; pc.classList.remove('tab-animate');
+    ac.style.display = 'none'; ac.classList.remove('tab-animate');
   } else {
-    pc.style.display = ''; pc.classList.add('tab-animate');
+    ac.style.display = ''; ac.classList.add('tab-animate');
     rc.style.display = 'none'; rc.classList.remove('tab-animate');
-    renderPBsTab();
   }
 }
 
@@ -1496,6 +1499,13 @@ function renderPBsTab() {
   }).join('');
 }
 
+function showToast(msg) {
+  var toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 2200);
+}
+
 function addPBRecord() {
   const name = document.getElementById('pbName').value.trim();
   const date = document.getElementById('pbDate').value;
@@ -1520,6 +1530,8 @@ function addPBRecord() {
   // Clear form
   ['pbName','pbDate','pbDist','pbSwim','pbBike','pbRun','pbTotal','pbNotes'].forEach(id => document.getElementById(id).value = '');
   renderPBModal();
+  switchPBTab('records');
+  showToast(t('pbAddSuccess'));
 }
 
 function deletePB(id) {
@@ -1833,5 +1845,7 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 </script>
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
 </body>
 </html>
