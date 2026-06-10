@@ -628,6 +628,7 @@
 let allHistory = [];
 let _embeddedWeekly_ = null;
 let _embeddedCourse_ = [];
+let _embeddedPlans_ = [];
 let allPlans = [];
 let allActivities = [];
 let _todayCourse = [];
@@ -918,11 +919,22 @@ function setSyncStatus(msg) {
   if (el) { el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
 }
 function loadData(){
-  return fetch('/api/plans')
-    .then(r => r.json())
+  // If _embeddedPlans_ has data (from server-side embedding), use it to survive network failures
+  const hasEmbedded = typeof _embeddedPlans_ !== 'undefined' && _embeddedPlans_.length > 0;
+  const serverFetch = hasEmbedded
+    ? Promise.resolve({ events: [] }) // skip network, use embedded
+    : fetch('/api/plans').then(r => r.json());
+
+  return serverFetch
     .then(plansData => {
-      setSyncStatus(locale === 'zh' ? '同步完成 ✓' : 'Synced ✓');
-      const serverEvents = plansData.events||[];
+      let serverEvents = plansData.events||[];
+      // Use embedded data if network fetch was skipped or returned empty
+      if (serverEvents.length === 0 && hasEmbedded) {
+        serverEvents = _embeddedPlans_;
+        setSyncStatus(locale==='zh' ? '离线数据 (Apple Calendar)' : 'Offline data (Apple Calendar)');
+      } else {
+        setSyncStatus(locale === 'zh' ? '同步完成 ✓' : 'Synced ✓');
+      }
       const events = serverEvents.map(ev=>({
         date: ev.DTSTART ? `${String(ev.DTSTART).slice(0,4)}-${String(ev.DTSTART).slice(4,6)}-${String(ev.DTSTART).slice(6,8)}` : '',
         summary: ev.SUMMARY||'',
@@ -934,7 +946,7 @@ function loadData(){
       renderWeek(events,todayKey,allActivities);
       // Fetch today's course schedule
       setSyncStatus(locale==='zh' ? '拉取今日课程…' : 'Fetching today\'s classes…');
-      return fetch('/api/course').then(r=>r.json()).catch(()=>({events:[]}));
+      return fetch('/api/course/apple').then(r=>r.json()).catch(()=>({events:[]}));
     })
     .then(courseData => {
       _todayCourse = courseData.events || [];
@@ -1058,13 +1070,17 @@ function renderCourse(events) {
   const items = evs.map(ev => {
     const summary = ev.SUMMARY || '';
     const desc = ev.DESCRIPTION || '';
+    const time = ev._time || '';
+    const loc = ev.LOCATION || '';
     // summary format: "课程名 - 节次" or "课程名 - 节次 - 教师"
     const parts = summary.split(' - ');
     const name = parts[0] || summary;
     const meta = parts.slice(1).join(' · ');
     return `<div class="course-item">
       <div class="course-name">${name}</div>
+      ${time ? `<div class="course-time">${time}</div>` : ''}
       ${meta ? `<div class="course-meta">${meta}</div>` : ''}
+      ${loc ? `<div class="course-loc">${loc}</div>` : ''}
       ${desc ? `<div class="course-desc">${desc}</div>` : ''}
     </div>`;
   }).join('');
