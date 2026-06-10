@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
 const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -11,7 +10,9 @@ const READ_EVENTS_PY = '/tmp/read_events_py.py';
 const READ_EVENTS_SCPT = '/tmp/read_events_py.scpt';
 const COROS_SCRIPT = '/tmp/get_coros_data.js';
 
-app.use(cors());
+// Calendar names (configurable via .env or fallback)
+const CAL_COURSE = process.env.CAL_COURSE || '大三下课程表';
+const CAL_PLAN = process.env.CAL_PLAN || '训练计划';
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -68,40 +69,36 @@ app.get('/', (req, res) => {
   try {
     const histData = execSync('node "' + COROS_SCRIPT + '" --history', { timeout: 5000 });
     const hist = JSON.parse(histData.toString());
-    html = html.replace('let allHistory = [];',
-      `let allHistory = ${JSON.stringify(hist.activities || [])};`);
+    html = html.replace(/let\s+allHistory\s*=\s*\[\s*\];?/, `let allHistory = ${JSON.stringify(hist.activities || [])};`);
   } catch(e) { /* offline */ }
 
   // 2. COROS weekly summary
   try {
     const wkData = execSync('node "' + COROS_SCRIPT + '" --weekly', { timeout: 5000 });
     const wk = JSON.parse(wkData.toString());
-    html = html.replace('let _embeddedWeekly_ = null;',
-      `let _embeddedWeekly_ = ${JSON.stringify(wk)};`);
+    html = html.replace(/let\s+_embeddedWeekly_\s*=\s*null;?/, `let _embeddedWeekly_ = ${JSON.stringify(wk)};`);
   } catch(e) { /* offline */ }
 
   // 3. Today's course events from Apple Calendar
   try {
-    const result = readAppleCalendar('大三下课程表', todayStr, todayStr);
+    const result = readAppleCalendar(CAL_COURSE, todayStr, todayStr);
     if (result.ok && result.data.length > 0) {
       const icsEvents = result.data.map(toIcsEvent);
-      html = html.replace('let _embeddedCourse_ = [];',
-        `let _embeddedCourse_ = ${JSON.stringify(icsEvents)};`);
+      html = html.replace(/let\s+_embeddedCourse_\s*=\s*\[\s*\];?/, `let _embeddedCourse_ = ${JSON.stringify(icsEvents)};`);
     }
   } catch(e) { /* offline */ }
 
   // 4. Today's training plan from Apple Calendar
   try {
     const scptResult = execSync(
-      `osascript "${READ_EVENTS_SCPT}" "训练计划"`,
+      `osascript "${READ_EVENTS_SCPT}" "${CAL_PLAN}"`,
       { timeout: 20000 }
     );
     const raw = scptResult.toString().trim();
     if (raw && raw !== '[]' && raw !== '"[]"') {
       const events = parseCalScptOutput(raw);
       if (events.length > 0) {
-        html = html.replace('let _embeddedPlans_ = [];',
-          `let _embeddedPlans_ = ${JSON.stringify(events)};`);
+        html = html.replace(/let\s+_embeddedPlans_\s*=\s*\[\s*\];?/, `let _embeddedPlans_ = ${JSON.stringify(events)};`);
       }
     }
   } catch(e) { /* offline */ }
@@ -112,7 +109,7 @@ app.get('/', (req, res) => {
 // GET /api/course/apple ── Today's course events
 app.get('/api/course/apple', (req, res) => {
   const todayStr = fmtDate(new Date());
-  const result = readAppleCalendar('大三下课程表', todayStr, todayStr);
+  const result = readAppleCalendar(CAL_COURSE, todayStr, todayStr);
   if (!result.ok) {
     return res.status(500).json({ error: 'Failed to read calendar', detail: result.error });
   }
@@ -127,7 +124,7 @@ app.get('/api/course/apple/all', (req, res) => {
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-  const result = readAppleCalendar('大三下课程表', fmtDate(startOfWeek), fmtDate(endOfWeek));
+  const result = readAppleCalendar(CAL_COURSE, fmtDate(startOfWeek), fmtDate(endOfWeek));
   if (!result.ok) {
     return res.status(500).json({ error: result.error });
   }
@@ -138,7 +135,7 @@ app.get('/api/course/apple/all', (req, res) => {
 app.get('/api/plans', (req, res) => {
   try {
     const result = execSync(
-      `osascript "${READ_EVENTS_SCPT}" "训练计划"`,
+      `osascript "${READ_EVENTS_SCPT}" "${CAL_PLAN}"`,
       { timeout: 20000 }
     );
     const raw = result.toString().trim();
@@ -156,6 +153,18 @@ app.get('/api/plans', (req, res) => {
 app.get('/api/weekly', (req, res) => {
   try {
     const data = execSync('node "' + COROS_SCRIPT + '" --weekly', { timeout: 5000 });
+    res.json(JSON.parse(data.toString()));
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// GET /api/coros ── Composite COROS endpoint (used by index.html loadData)
+app.get('/api/coros', (req, res) => {
+  const mode = req.query.mode;
+  try {
+    const scriptArgs = mode === 'weekly' ? '--weekly' : mode === 'history' ? '--history' : '--weekly';
+    const data = execSync('node "' + COROS_SCRIPT + '" ' + scriptArgs, { timeout: 5000 });
     res.json(JSON.parse(data.toString()));
   } catch(e) {
     res.status(500).json({ error: e.message });

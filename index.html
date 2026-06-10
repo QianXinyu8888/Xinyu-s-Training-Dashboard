@@ -632,8 +632,8 @@ let _embeddedPlans_ = [];
 let allPlans = [];
 let allActivities = [];
 let _todayCourse = [];
-const today = new Date();
-const todayKey = today.toISOString().slice(0,10);
+let today = new Date();
+const todayKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
 // ── i18n ──
 const I18N = {
@@ -993,7 +993,7 @@ function updateHeader(){
   // 跨天检测：如果日期变了，自动刷新数据
   if (now.toDateString() !== today.toDateString()) {
     today = now;
-    loadData(true);
+    location.reload();
   }
 }
 
@@ -1014,19 +1014,13 @@ function renderStats(d, historyActs){
   }
   window._monthActLen = monthActs.length; document.getElementById('stMonthCount').innerHTML = monthActs.length + '<span class="unit" data-i18n="countUnit">' + (locale==='zh'?'次':'') + '</span>';
   document.getElementById('stMonthCountSub').textContent = t('monthComplete');
-  // 有氧耐力评分
+  // 有氧耐力评分（保存起来，等运动占比写完后显示在副标题）
   const aeScore = s.aerobicEnduranceScore;
-  if(aeScore !== undefined && aeScore !== null){
-    const aePct = Math.min(100, Math.round(aeScore));
-    document.getElementById('stAE').innerHTML = `<div class="ae-bar"><div class="ae-fill" style="width:${aePct}%"></div><span class="ae-label">${aePct}</span></div>`;
-    const aeText = aeScore >= 85 ? t('corosGood') : aeScore >= 70 ? t('corosOk') : aeScore >= 50 ? t('corosFair') : t('corosWeak');
-    document.getElementById('stAESub').textContent = aeText;
-  } else {
-    document.getElementById('stAE').innerHTML = '<div class="ae-bar"><div class="ae-fill" style="width:0%"></div></div>';
-    document.getElementById('stAESub').textContent = t('noData');
-  }
+  const _aeInfo = (aeScore !== undefined && aeScore !== null)
+    ? { score: aeScore, text: aeScore >= 85 ? t('corosGood') : aeScore >= 70 ? t('corosOk') : aeScore >= 50 ? t('corosFair') : t('corosWeak') }
+    : null;
   // 运动类型占比
-  const stMap = { swim:[300], bike:[100,101,102,103,104], run:[200,201,202,203,204] };
+  const stMap = { swim:[300,301], bike:[200,201,202,203,204], run:[100,101,102,103,104] };
   const totals = {};
   for(const [k,types] of Object.entries(stMap)){
     totals[k] = monthActs.filter(a => types.includes(a.sportType)).reduce((s,a) => s+(a.duration||0), 0);
@@ -1038,10 +1032,10 @@ function renderStats(d, historyActs){
     const parts = Object.entries(totals).filter(([,v])=>v>0).map(([k,v])=>`${icons[k]}${Math.round(v*100/totalDur)}%`).join('·');
     const partsHtml = Object.entries(totals).filter(([,v])=>v>0).map(([k,v])=>`<span class="pct-item"><span class="pct-icon">${icons[k]}</span><span class="pct-val">${Math.round(v*100/totalDur)}%</span></span>`).join('');
     document.getElementById('stAE').innerHTML = partsHtml || '—';
-    document.getElementById('stAESub').textContent = '';
+    document.getElementById('stAESub').textContent = _aeInfo ? `COROS 有氧 ${_aeInfo.score}/100 · ${_aeInfo.text}` : '';
   } else {
     document.getElementById('stAE').innerHTML = '—<span class="unit"></span>';
-    document.getElementById('stAESub').textContent = t('noData');
+    document.getElementById('stAESub').textContent = _aeInfo ? `COROS 有氧 ${_aeInfo.score}/100 · ${_aeInfo.text}` : t('noData');
   }
   // Recent activities under month count card
   const recentContainer = document.getElementById('recentList');
@@ -1144,7 +1138,7 @@ function renderWeek(evts,todayKey,activities){
   // Start from TODAY, show next 7 days
   for(let i=0; i<7; i++){
     const d=new Date(today); d.setDate(d.getDate()+i);
-    const key=d.toISOString().slice(0,10);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const ev=evts.find(e=>e.date===key);
     const acts=actMap[key]||[];
     const isToday=key===todayKey;
@@ -1707,14 +1701,15 @@ function downloadShareCard() {
   var moActs=allHistory.filter(function(a){var sd=String(a.date||'');var d=sd.length===8?sd.slice(0,4)+'-'+sd.slice(4,6)+'-'+sd.slice(6,8):sd;return d>=_mk+'-01'&&d<=_tk;});
   moActs.sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
   var moDur=moActs.reduce(function(s,a){return s+(a.duration||0);},0);
-  var mSwim=moActs.filter(function(a){return a.sportType===300;}).reduce(function(s,a){return s+(a.duration||0);},0);
-  var mBike=moActs.filter(function(a){return a.sportType===200;}).reduce(function(s,a){return s+(a.duration||0);},0);
-  var mRun=moActs.filter(function(a){return a.sportType===100||a.sportType===103;}).reduce(function(s,a){return s+(a.duration||0);},0);
+  var _swimTypes=[300,301],_bikeTypes=[200,201,202,203,204],_runTypes=[100,101,102,103,104];
+  var mSwim=moActs.filter(function(a){return _swimTypes.includes(a.sportType);}).reduce(function(s,a){return s+(a.duration||0);},0);
+  var mBike=moActs.filter(function(a){return _bikeTypes.includes(a.sportType);}).reduce(function(s,a){return s+(a.duration||0);},0);
+  var mRun=moActs.filter(function(a){return _runTypes.includes(a.sportType);}).reduce(function(s,a){return s+(a.duration||0);},0);
   var pct=function(v,t){return t>0?Math.round(v/t*100):0;};
   var sp=pct(mSwim,moDur),bp=pct(mBike,moDur),rp=pct(mRun,moDur);
 
-  var sc=function(st){if(st===300)return C.swim;if(st===200)return C.bike;if(st===100||st===103)return C.run;return C.inkLight;};
-  var sn=function(st){if(st===300)return 'SWIM';if(st===200)return 'BIKE';if(st===100||st===103)return 'RUN';return 'SPORT';};
+  var sc=function(st){if(_swimTypes.includes(st))return C.swim;if(_bikeTypes.includes(st))return C.bike;if(_runTypes.includes(st))return C.run;return C.inkLight;};
+  var sn=function(st){if(_swimTypes.includes(st))return 'SWIM';if(_bikeTypes.includes(st))return 'BIKE';if(_runTypes.includes(st))return 'RUN';return 'SPORT';};
   var fmtHMS=function(sec){if(!sec)return '--:--';var h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=Math.floor(sec%60);return h>0?(h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')):(m+':'+String(s).padStart(2,'0'));};
   var fmtD=function(d){var s=String(d||'');if(s.length===8)return s.slice(4,6)+'/'+s.slice(6,8);if(s.indexOf('-')>-1)return s.slice(5,7)+'/'+s.slice(8,10);return s;};
   var durFmt=function(d){if(!d)return'';var h=d/3600;return h>=1?h.toFixed(1)+'h':Math.round(d/60)+'min';};

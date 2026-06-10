@@ -31,3 +31,6 @@ server_embed_*.js
 # Windows
 Thumbs.db
 ehthumbs.db
+
+# Midscene test artifacts
+midscene_run/
