@@ -26,15 +26,15 @@
          ▲                                    │
          │                                    ▼
 ┌─────────────────┐              ┌────────────────────────┐
-│ index.html      │              │  get_coros_data.js     │
-│ 静态文件        │              │  (COROS REST API)      │
+│ index.html      │              │  get_coros_data_mcp.js │
+│ 静态文件        │              │  (COROS MCP CLI)       │
 └─────────────────┘              │  + ICS 解析            │
          ▲                       └────────────────────────┘
          │                                │
          │                                ▼
 ┌─────────────────┐              ┌────────────────────────┐
 │ ~/Desktop/      │              │ COROS API              │
-│ Xinyu's plans/  │              │ teamcnapi.coros.com    │
+│ Xinyu's plans/  │              │ coros-mcp (OAuth)      │
 │  (ICS 文件)      │              └────────────────────────┘
 └─────────────────┘
 ```
@@ -56,8 +56,8 @@
     ▼
 server.js 收到请求
     │
-    ├─ 执行 get_coros_data.js --history  → 获取 COROS 历史数据
-    ├─ 执行 get_coros_data.js --weekly   → 获取本周评分
+    ├─ 执行 get_coros_data_mcp.js --weekly   → 获取本周评分（MCP）
+    ├─ 客户端异步 fetch /api/coros?mode=history  → 获取历史数据
     └─ 读取当日 course_YYYY-MM-DD.ics   → 获取课程数据
     │
     ▼
@@ -159,38 +159,22 @@ function sportOf(s, d) {
 
 优先级：游泳 > 骑行 > 跑步 > 休息 > 其他。依靠关键词匹配，不依赖 COROS 的 `sportType`。
 
-### 3. COROS 认证 Header 组成
+### 3. COROS 数据获取（MCP）
+
+通过 `npx coros-mcp call-tool` 调用官方 MCP 工具，OAuth 认证，无需手动管理 Header 和 Token。
 
 ```javascript
-// 必须包含以下全部 Header，缺一不可
-{
-  "accesstoken": token,           // 小写！COROS API 要求全小写
-  "cookie": `CPL-coros-region=2; CPL-coros-token=${token}`,
-  "origin": "https://t.coros.com",
-  "referer": "https://t.coros.com/",
-  "user-agent": "Mozilla/5.0 ..."  // 需要真实 UA
+// get_coros_data_mcp.js 中
+function mcpCall(tool, argsJson) {
+  const cmd = `npx coros-mcp call-tool --tool ${tool} --arguments-json '${JSON.stringify(argsJson)}'`;
+  const raw = execSync(cmd, { timeout: 30000 });
+  // 解析返回的 JSON 文本
 }
 ```
 
-**踩坑记录**：`accesstoken` 如果写成 `accessToken`（驼峰），会返回 401。这是 COROS API 的一个非标准要求。
+MCP 返回的是人类可读文本，`get_coros_data_mcp.js` 通过正则解析运动记录、体能评估、训练负荷等结构化数据。
 
-### 4. 历史数据分批拉取
-
-COROS `/activity/query` 每次最多返回 50 条记录。`--history` 模式分批拉取 6 个月数据：
-
-```javascript
-// 伪代码
-const allActivities = [];
-for (const [start, end] of dateRanges) {
-  const batch = await getActivities(fetch, start, end);
-  allActivities.push(...batch);
-  if (batch.length < 50) break;  // 已到尽头
-}
-```
-
-实际实现中用 30 天为一个批次窗口，循环拉取直到无新数据。
-
-### 5. 四宫格等高布局
+### 4. 四宫格等高布局
 
 使用 CSS Grid 的 `grid-auto-rows: 1fr` 实现四宫格等高：
 
@@ -217,13 +201,13 @@ for (const [start, end] of dateRanges) {
 
 ### 1. 服务端数据内嵌的代价
 
-- 每次页面访问都会执行 2 次 COROS API 调用（`--history` + `--weekly`）
-- 约增加 2-5 秒 TTFB（Time To First Byte）
-- 适合个人项目；多用户场景需要引入 Redis 缓存
+- 每次页面访问都会执行 1 次 MCP 调用（`--weekly`）
+- `--history` 改为客户端异步 fetch，不阻塞首屏
+- 约增加 1-3 秒 TTFB
 
 ### 2. 历史数据量
 
-`--history` 拉取 6 个月数据，约 200-400 条记录，JSON 体积约 200-400 KB。在移动网络下约 1-2 秒。
+`--history` 拉取 6 个月数据，约 200-400 条记录。在移动网络下约 1-2 秒。
 
 ### 3. 前端渲染性能
 
@@ -233,11 +217,10 @@ for (const [start, end] of dateRanges) {
 
 ## 安全性说明
 
-1. **COROS 密码**：存储为 MD5 哈希（不可逆），即使泄露也无法还原明文密码
+1. **COROS 认证**：使用官方 MCP OAuth，token 由 MCP 管理，代码中无密码
 2. **无数据库**：所有数据均在内存或用户设备本地，无持久化存储
 3. **本地运行**：服务暴露在局域网，无公网访问控制，生产部署需加防火墙
-4. **Token 有效期**：COROS accessToken 有效期未知，需设计过期重登逻辑（当前未实现）
 
 ---
 
-*Architecture v1.0 — 2026-05-29*
+*Architecture v2.0 — 2026-06-13（迁移至 COROS MCP）*

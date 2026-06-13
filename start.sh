@@ -27,9 +27,10 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
-# 检查 COROS 配置
-if grep -q 'YOUR_PHONE_NUMBER' get_coros_data.js 2>/dev/null; then
-    echo "⚠️  注意：COROS 账号仍为默认账号，请编辑 get_coros_data.js 修改"
+# 检查 coros-mcp 是否可用
+if ! npx coros-mcp list-tools &>/dev/null; then
+    echo "⚠️  注意：coros-mcp 未安装或未认证"
+    echo "   请运行: npm install -g coros-mcp && coros-mcp login"
 fi
 
 echo ""

@@ -65,7 +65,7 @@ cd Xinyu's-Training-Dashboard
 如果是手动复制文件，确保包含以下文件：
 - `index.html`
 - `server.js`
-- `get_coros_data.js`
+- `get_coros_data_mcp.js`
 - `package.json`
 
 ---
@@ -84,37 +84,19 @@ added 120 packages, and audited 120 packages in 5s
 
 ---
 
-## Step 4：配置 COROS 账号
+## Step 4：配置 COROS MCP
 
-### 4.1 生成 MD5 密码
+本项目使用 COROS 官方 `coros-mcp` CLI（OAuth 认证），无需手动管理密码。
 
-> ⚠️ MD5 是单向加密，用于 COROS 登录验证，不会暴露你的明文密码
-
-**macOS / Linux：**
 ```bash
-echo -n "你的COROS密码" | md5
-# 输出：32位小写字母数字，例如：YOUR_MD5_PASSWORD
+# 安装 coros-mcp
+npm install -g coros-mcp
+
+# 首次登录授权
+npx coros-mcp login
 ```
 
-**Windows PowerShell：**
-```powershell
-$mystring = "你的COROS密码"
-$md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
-$hash = [System.BitConverter]::ToString($md5.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($mystring)))
-$hash.Replace("-","").ToLower()
-```
-
-### 4.2 编辑配置文件
-
-打开 `get_coros_data.js`，找到第 15-16 行：
-
-```javascript
-// 第 15 行：COROS 账号（手机号）
-const ACCOUNT = "YOUR_PHONE_NUMBER";           // ← 替换为你的手机号
-
-// 第 16 行：MD5 加密后的密码
-const PASSWORD_MD5 = "YOUR_MD5_PASSWORD";  // ← 替换为上一步得到的 MD5 字符串
-```
+> 登录一次后 token 持久化保存，后续无需重复操作。
 
 ---
 
@@ -173,10 +155,7 @@ node server.js
 
 预期输出：
 ```
-🏊‍♂️🚴🏃‍♂️ Xinyu's Training Dashboard
-📍 http://localhost:3000
-📂 Reading from: ~/Desktop/Xinyu's plans
-⌚ COROS API: http://localhost:3000/api/coros
+Dashboard running at http://localhost:3000
 ```
 
 ### 6.2 后台运行（生产环境）
@@ -279,11 +258,10 @@ npm install --registry=https://registry.npmmirror.com
 npm config set registry https://registry.npmmirror.com
 ```
 
-### Q：COROS API 返回 401 Unauthorized
+### Q：COROS 数据获取失败
 
-- 账号或 MD5 密码填写错误
-- Token 过期（需要重新登录）
-- 解决方案：重新获取 MD5 密码，确认 ACCOUNT 填写正确
+- MCP 登录状态过期
+- 解决方案：运行 `npx coros-mcp login` 重新授权
 
 ### Q：页面显示中文但想用英文
 

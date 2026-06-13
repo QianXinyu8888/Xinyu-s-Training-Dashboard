@@ -12,17 +12,12 @@
 cd Xinyu's-Training-Dashboard && npm install
 ```
 
-### 2. 配置 COROS 账号
+### 2. 配置 COROS MCP
 
 ```bash
-# 生成你的 MD5 密码
-echo -n "你的密码" | md5
-# 复制输出，例如：abc123def456...
-
-# 编辑配置文件
-nano get_coros_data.js
-#   改第 15 行：const ACCOUNT = "你的手机号";
-#   改第 16 行：const PASSWORD_MD5 = "你的MD5密码";
+# 安装并登录 COROS 官方 MCP
+npm install -g coros-mcp
+npx coros-mcp login
 ```
 
 ### 3. 放入 ICS 训练计划文件
@@ -35,8 +30,7 @@ mkdir -p ~/Desktop/Xinyu\'s\ plans
 ### 4. 启动
 
 ```bash
-# 方式 A：双击 start.sh
-open start.sh
+# 方式 A：双击桌面上的 启动训练计划dashboard.sh
 
 # 方式 B：终端命令
 cd Xinyu's-Training-Dashboard && node server.js
@@ -56,13 +50,13 @@ http://localhost:3000
 
 ```
 Xinyu's-Training-Dashboard/
-├── index.html           ← 完整前端（含 HTML/CSS/JS）
-├── server.js            ← Express 服务端
-├── get_coros_data.js   ← COROS 数据获取脚本
-└── package.json        ← Node.js 依赖声明
+├── index.html               ← 完整前端（含 HTML/CSS/JS）
+├── server.js                ← Express 服务端
+├── get_coros_data_mcp.js   ← COROS 数据获取脚本（MCP 封装）
+└── package.json            ← Node.js 依赖声明
 ```
 
-然后执行上述 4 步骤即可。
+然后执行上述步骤即可。
 
 ---
 
@@ -86,10 +80,13 @@ Xinyu's-Training-Dashboard/
 npm install --registry=https://registry.npmmirror.com
 ```
 
-### Q：COROS API 返回 `Login failed`
+### Q：COROS 数据不显示
 
-- 手机号或 MD5 密码填错了
-- MD5 生成命令：`echo -n "密码" | md5`（macOS），密码不要有引号
+```bash
+# 检查 MCP 是否正常工作
+npx coros-mcp login
+npx coros-mcp call-tool --tool queryFitnessAssessmentOverview --arguments-json '{}'
+```
 
 ### Q：ICS 文件放入后页面没变化
 

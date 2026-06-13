@@ -30,7 +30,7 @@
 
 | 数据源 | 说明 | 格式 |
 |--------|------|------|
-| COROS 高驰手表 | 运动历史、训练评分、计划完成情况 | REST API |
+| COROS 高驰手表 | 运动历史、训练评分、计划完成情况 | 官方 MCP CLI |
 | 训练计划 ICS | 教练安排的每日训练内容 | iCalendar `.ics` 文件 |
 | 课程表 ICS | 学期课程安排（跨 Agent 协作） | iCalendar `.ics` 文件 |
 
@@ -94,13 +94,12 @@ Xinyu's-Training-Dashboard/
 ├── index.html                         # 前端主文件（含全部 HTML/CSS/JS）
 ├── server.js                          # Node.js Express 服务端
 ├── package.json                       # Node 依赖声明
-├── get_coros_data.js                  # COROS 数据获取脚本（CLI + Server 共用）
+├── get_coros_data_mcp.js             # COROS 数据获取脚本（官方 MCP CLI）
 │
 └── skills/
-    └── coros-data-skill/              # COROS API 封装 Skill
+    └── coros-data-skill/              # COROS MCP 封装 Skill
         ├── SKILL.md
         └── scripts/
-            └── coros.js               # 核心认证逻辑（CorosClient 类）
 
 关联数据文件（项目外）：
 ├── ~/Desktop/Xinyu's plans/           # 训练计划 ICS 存放目录
@@ -108,13 +107,11 @@ Xinyu's-Training-Dashboard/
 │   │   └── course_YYYY-MM-DD.ics
 │   └── week{N}_{YYYYMMDD}.ics        # 每周训练计划
 │
-└── ~/.qclaw/skills/coros-data-skill/ # COROS Skill（含 .env 配置文件）
+└── ~/.qclaw/skills/coros-data-skill/ # COROS MCP Skill
     └── scripts/
-        ├── .env                       # 存放 COROS 账号 + MD5 密码
-        └── coros.js                   # Skill 版实现
 ```
 
-> **注意**：`get_coros_data.js` 与 `coros-data-skill/scripts/coros.js` 为两个独立实现，前者用于 Dashboard Server 内嵌调用，后者为 Skill 封装版。
+> **注意**：COROS 数据通过官方 `coros-mcp` CLI 获取，`get_coros_data_mcp.js` 封装 MCP 调用，供 `server.js` 内嵌使用。
 
 ---
 
@@ -151,28 +148,19 @@ cd Xinyu's-Training-Dashboard
 npm install
 ```
 
-### Step 3：配置 COROS 账号
+### Step 3：配置 COROS MCP
 
-COROS 密码需预先 MD5 加密。有两种配置方式：
+本项目使用 COROS 官方 `coros-mcp` CLI 获取数据（OAuth 认证，无需手动管理密码）。
 
-**方式 A：通过环境变量（推荐，生产环境）**
 ```bash
-export COROS_ACCOUNT="你的手机号"
-export COROS_PASSWORD="MD5加密后的密码"   # 32位小写
-node server.js
+# 安装 coros-mcp（首次）
+npm install -g coros-mcp
+
+# 首次使用需要登录授权
+npx coros-mcp login
 ```
 
-**方式 B：直接编辑 `get_coros_data.js` 头部常量（快速本地开发）**
-```javascript
-const ACCOUNT = "YOUR_PHONE_NUMBER";           // 替换为你的账号
-const PASSWORD_MD5 = "YOUR_MD5_PASSWORD";  // 替换为你的MD5密码
-```
-
-> 💡 如何获取 MD5 密码？在 macOS 终端执行：
-> ```bash
-> echo -n "你的明文密码" | md5
-> ```
-> 得到 32 位小写字符串，填入上方的 `PASSWORD_MD5`。
+> COROS MCP 使用 OAuth 认证，登录一次后 token 持久化保存，无需每次输入密码。
 
 ### Step 4：准备训练计划 ICS 文件
 
@@ -211,10 +199,7 @@ node server.js
 
 看到以下输出表示启动成功：
 ```
-🏊‍♂️🚴🏃‍♂️ Xinyu's Training Dashboard
-📍 http://localhost:3000
-📂 Reading from: ~/Desktop/Xinyu's plans
-⌚ COROS API: http://localhost:3000/api/coros
+Dashboard running at http://localhost:3000
 ```
 
 ### Step 6：访问 Dashboard
@@ -233,13 +218,9 @@ ipconfig getifaddr en0
 
 **启动脚本（ macOS 桌面快捷方式）**：
 ```bash
-# 创建启动脚本
-cat > ~/Desktop/启动训练计划dashboard.sh << 'EOF'
-#!/bin/bash
-cd ~/Desktop/Xinyu's-Training-Dashboard
-osascript -e 'tell app "Terminal" to do script "cd ~/Desktop/Xinyu's-Training-Dashboard && node server.js"'
-EOF
-chmod +x ~/Desktop/启动训练计划dashboard.sh
+# 双击桌面上的 启动训练计划dashboard.sh 即可启动
+# 或者终端运行：
+~/Desktop/启动训练计划dashboard.sh
 ```
 
 ---
@@ -248,23 +229,18 @@ chmod +x ~/Desktop/启动训练计划dashboard.sh
 
 ### 关键配置项
 
-| 配置项 | 文件 | 位置 | 说明 |
-|--------|------|------|------|
-| COROS 账号 | `get_coros_data.js` | 第 15-16 行 | 手机号 |
-| COROS MD5 密码 | `get_coros_data.js` | 第 16 行 | MD5 加密后的密码 |
-| ICS 文件目录 | `server.js` | 第 12-13 行 | `PLANS_DIR` / `COURSE_DIR` |
-| 服务端口 | `server.js` | 第 11 行 | 默认 3000 |
-| 服务监听地址 | `server.js` | 最后一行的 `listen()` | 默认 `0.0.0.0`（接受所有网卡）|
+| 配置项 | 位置 | 说明 |
+|--------|------|------|
+| COROS 认证 | `coros-mcp` CLI | 运行 `npx coros-mcp login` 进行 OAuth 授权 |
+| ICS 文件目录 | `server.js` 头部 | 通过 `.env` 的 `CAL_COURSE` / `CAL_PLAN` 配置 |
+| 服务端口 | `server.js` | 默认 3000 |
 
-### 修改 COROS 账号密码
+### 修改 COROS 认证
 
-编辑 `get_coros_data.js` 第 15-16 行：
-```javascript
-const ACCOUNT = "YOUR_PHONE_NUMBER";         // 替换
-const PASSWORD_MD5 = "ed63...a7d45";   // 替换
+如需重新登录或切换账号：
+```bash
+npx coros-mcp login
 ```
-
-修改后需重启 `node server.js`。
 
 ### 修改 ICS 目录
 
@@ -289,33 +265,25 @@ const COURSE_DIR = join(PLANS_DIR, 'course_schedule');
 
 ### COROS API 模式（`/api/coros?mode=xxx`）
 
-| mode 参数 | 说明 | 对应 COROS 端点 |
+| mode 参数 | 说明 | 对应 MCP 工具 |
 |-----------|------|----------------|
-| `today`（默认）| 当日活动 | `GET /activity/query?startDay=...&endDay=...` |
-| `--todayplan` | 今天+未来7天训练计划 | 叠加 `/training/schedule/query` |
-| `--weekly` | 本周汇总+评分 | 叠加 `/dashboard/query` |
-| `--history` | 近6个月全部历史 | 分批拉取（每次50条）|
+| `weekly` | 本周汇总+体能评分 | `querySportRecords` + `queryFitnessAssessmentOverview` |
+| `history` | 近6个月全部历史 | `querySportRecords`（180天范围）|
 
-### `get_coros_data.js` CLI 用法
+### `get_coros_data_mcp.js` CLI 用法
 
 ```bash
 # 当日数据
-node get_coros_data.js
+node get_coros_data_mcp.js
 
 # 指定日期
-node get_coros_data.js 20260529
-
-# 今天+未来7天计划
-node get_coros_data.js --todayplan
+node get_coros_data_mcp.js 20260611
 
 # 本周汇总
-node get_coros_data.js --weekly
+node get_coros_data_mcp.js --weekly
 
 # 近6个月历史
-node get_coros_data.js --history
-
-# 调试模式（输出友好文本）
-node get_coros_data.js --history --debug
+node get_coros_data_mcp.js --history
 ```
 
 ---
@@ -327,16 +295,15 @@ node get_coros_data.js --history --debug
 **职责**：
 - 管理 Express 路由
 - 解析 ICS 文件
-- 调用 `get_coros_data.js` 获取 COROS 数据
+- 调用 `get_coros_data_mcp.js` 获取 COROS 数据
 - **关键**：在 HTML 响应前内嵌 COROS 数据（防止客户端 fetch 失败）
 
 **数据内嵌策略**：
 ```javascript
 // 访问 / 时，server.js 会：
 // 1. 读取 index.html 源码
-// 2. 执行 get_coros_data.js 获取最新 COROS 数据
+// 2. 执行 get_coros_data_mcp.js --weekly 获取本周 COROS 评分
 // 3. 替换 HTML 中的占位变量：
-//    let allHistory = [];          → let allHistory = <实际数据>;
 //    let _embeddedWeekly_ = null;   → let _embeddedWeekly_ = <本周评分>;
 //    let _embeddedCourse_ = [];     → let _embeddedCourse_ = <今日课程>;
 // 4. 发送含数据的 HTML 给浏览器
@@ -375,36 +342,24 @@ node get_coros_data.js --history --debug
 | `_todayCourse` | Array | 当日课程 ICS 事件 |
 | `locale` | String | 当前语言 `'zh'` 或 `'en'` |
 
-### 3. get_coros_data.js —— COROS 数据获取
+### 3. get_coros_data_mcp.js —— COROS 数据获取
 
-**认证流程**：
-```
-1. POST /account/login
-   Body: { account, accountType: 1（手机号）, pwd: MD5密码 }
-   Response: { data: { accessToken: "xxx" } }
+**调用方式**：通过 `npx coros-mcp call-tool` 调用官方 MCP 工具。
 
-2. 后续所有请求携带 Header：
-   accesstoken: <token>
-   cookie: CPL-coros-region=2; CPL-coros-token=<token>
-   origin: https://t.coros.com
-   referer: https://t.coros.com/
-```
+**使用的 MCP 工具**：
 
-**关键 API 端点**：
-
-| 端点 | 方法 | 参数 | 说明 |
-|------|------|------|------|
-| `/account/login` | POST | account, accountType, pwd | 登录 |
-| `/activity/query` | GET | startDay, endDay, size, pageNumber | 活动列表 |
-| `/dashboard/query` | GET | startDay, endDay | 本周训练评分 |
-| `/training/schedule/query` | GET | startDate, endDate | 训练计划 |
+| 工具 | 参数 | 说明 |
+|------|------|------|
+| `querySportRecords` | startDate, endDate | 运动记录列表 |
+| `queryFitnessAssessmentOverview` | — | VO2max、跑步等级、比赛预测 |
+| `queryTrainingLoadAssessment` | days | 短期/长期训练负荷比 |
 
 **运动类型 sportType 映射**：
 
 | sportType | 运动类型 | 图标 |
 |-----------|----------|------|
-| 100-104 | 骑行类（户外/室内/越野/跑步机）| 🚴 |
-| 200-204 | 跑步类（公路/越野/铁三等）| 🏃 |
+| 100-104 | 跑步类（户外/室内/越野/跑步机）| 🏃 |
+| 200-204 | 骑行类（公路/室内/越野）| 🚴 |
 | 300-301 | 游泳类（泳池/开放水域）| 🏊 |
 | 10000 | 标铁/半铁 | 🔥 |
 
@@ -426,12 +381,12 @@ node get_coros_data.js --history --debug
 
 ## 📦 数据来源
 
-### COROS API
+### COROS MCP
 
-- **基础 URL**：`https://teamcnapi.coros.com`
-- **认证方式**：MD5 密码 + accessToken
-- **数据范围**：运动历史、训练评分、训练计划
-- **限制**：约 6 个月内历史数据，每次最多 50 条
+- **工具**：官方 `coros-mcp` CLI（`npx coros-mcp call-tool`）
+- **认证方式**：OAuth（`npx coros-mcp login`）
+- **数据范围**：运动历史、体能评估、训练负荷
+- **限制**：历史数据经 MCP 查询，无硬性条数限制
 
 ### ICS 训练计划
 
@@ -451,11 +406,11 @@ node get_coros_data.js --history --debug
 
 ### 页面空白或数据加载失败
 
-**原因**：COROS API 请求失败
+**原因**：COROS MCP 请求失败
 
 **排查**：
-1. 检查 Mac 本机是否可以访问：`curl https://teamcnapi.coros.com`
-2. 检查 `get_coros_data.js` 账号密码是否正确
+1. 检查 MCP 是否正常：`npx coros-mcp call-tool --tool queryFitnessAssessmentOverview --arguments-json '{}'`
+2. 检查 MCP 登录状态：`npx coros-mcp login`
 3. 重启服务：`node server.js`
 
 ### 四宫格显示"加载中"或"暂无数据"
@@ -489,15 +444,16 @@ node get_coros_data.js --history --debug
 4. 在 iPhone Safari 访问：`http://192.168.x.x:3000`
 5. 若使用 Tailscale：确认两端都在线，访问 Tailscale IP
 
-### COROS 登录失败（账号密码错误）
+### COROS 登录失败
 
 **解决**：
-1. 确认手机号格式正确（国内手机号直接写数字）
-2. 确认 MD5 密码正确，32位小写：
-   ```bash
-   echo -n "你的密码" | md5
-   # 对比 get_coros_data.js 中的 PASSWORD_MD5
-   ```
+```bash
+# 重新登录 MCP
+npx coros-mcp login
+
+# 验证 MCP 是否正常
+npx coros-mcp call-tool --tool queryFitnessAssessmentOverview --arguments-json '{}'
+```
 
 ### ICS 计划不显示
 

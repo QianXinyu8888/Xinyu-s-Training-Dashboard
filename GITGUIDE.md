@@ -11,7 +11,7 @@
 3. 填写：
    - **Repository name**：`duoduo-training-dashboard`
    - **Description**：`COROS 手表数据 + ICS 训练计划 Dashboard`
-   - **Private**（推荐选私有，因为包含 COROS 账号配置）
+   - **Private**（推荐选私有）
    - **不要**勾选 "Add a README"（我们已有）
 4. 点击 **Create repository**
 
@@ -47,13 +47,10 @@ node_modules/
 # macOS
 .DS_Store
 
-# 本地配置（包含账号密码，禁止上传！）
+# 环境变量
 .env
 .env.local
 .env.production
-
-# 服务端嵌入数据（每次启动都会变化）
-/data/
 
 # IDE
 .vscode/
@@ -81,7 +78,7 @@ git add .
 # 提交
 git commit -m "feat: initial Xinyu's Training Dashboard
 
-- COROS API 集成（活动历史/训练评分）
+- COROS MCP 集成（运动历史/体能评估）
 - ICS 训练计划解析与展示
 - 课程表集成
 - 中英文双语
@@ -96,38 +93,18 @@ git push -u origin main
 
 ## ⚠️ 敏感信息处理
 
-### 你的 COROS 账号配置
+### COROS 认证
 
-`get_coros_data.js` 中的账号密码**不应**提交到 GitHub。有两种处理方式：
+本项目使用 COROS 官方 `coros-mcp` CLI（OAuth 认证），**无需在代码中存储密码**。认证 token 存储在系统本地，不会进入 Git 仓库。
 
-**方式 A：使用 .gitignore（推荐）**
+### 环境变量
 
-将 `get_coros_data.js` 改为模板文件：
-```bash
-cp get_coros_data.js get_coros_data.js.template
-echo "get_coros_data.js" >> .gitignore
-echo "get_coros_data.js.template" >> .gitignore
-```
-
-提交时用户会看到 `.template` 版本，复制一份并填入自己的账号。
-
-**方式 B：使用环境变量**
-
-在 `.gitignore` 中添加 `get_coros_data.js`，并在 `.gitignore` 中排除它：
-```bash
-echo "get_coros_data.js" >> .gitignore
-git add .gitignore
-git commit -m "chore: ignore get_coros_data.js (contains credentials)"
-```
-
-### 创建 .env 示例文件
-
-创建 `.env.example`（不含真实密码）提交：
+如需通过 `.env` 配置日历名称等，创建 `.env.example`（不含真实值）提交：
 ```bash
 cat > .env.example << 'EOF'
-# COROS 账号配置
-COROS_ACCOUNT=你的手机号
-COROS_PASSWORD=你的MD5密码（32位小写）
+# Apple Calendar 名称
+CAL_COURSE=你的课程表日历名
+CAL_PLAN=你的训练计划日历名
 EOF
 ```
 
@@ -153,9 +130,9 @@ git clone https://github.com/<你的用户名>/duoduo-training-dashboard.git
 cd duoduo-training-dashboard
 npm install
 
-# 复制并填写配置
-cp get_coros_data.js.template get_coros_data.js
-# 编辑 get_coros_data.js，填入你的 COROS 账号
+# 安装并配置 COROS MCP
+npm install -g coros-mcp
+npx coros-mcp login
 
 # 放入 ICS 文件
 mkdir -p ~/Desktop/Xinyu\'s\ plans
@@ -164,23 +141,3 @@ mkdir -p ~/Desktop/Xinyu\'s\ plans
 # 启动
 node server.js
 ```
-
----
-
-## 8. 如果之前忘了忽略敏感文件
-
-如果你已经把含密码的 `get_coros_data.js` 提交了，立即：
-
-```bash
-# 从 Git 历史中删除（不可逆！）
-git filter-branch --force --index-filter \
-  'git rm --cached --ignore-unmatch get_coros_data.js' \
-  --tag-name-filter cat -- --all
-
-# 重新提交
-git add .
-git commit -m "chore: remove credentials from history"
-git push --force
-```
-
-> ⚠️ 这会改写 Git 历史，其他协作者需要重新克隆仓库。

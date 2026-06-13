@@ -6,9 +6,11 @@ const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
-const READ_EVENTS_PY = '/tmp/read_events_py.py';
-const READ_EVENTS_SCPT = '/tmp/read_events_py.scpt';
-const COROS_SCRIPT = '/tmp/get_coros_data.js';
+const READ_EVENTS_PY = path.join(__dirname, 'read_events.py');
+const READ_EVENTS_SCPT = path.join(__dirname, 'read_events.scpt');
+const COROS_SCRIPT = path.join(__dirname, 'get_coros_data_mcp.js');
+const MCP_TIMEOUT_WEEKLY = 15000;
+const MCP_TIMEOUT_HISTORY = 25000;
 
 // Calendar names (configurable via .env or fallback)
 const CAL_COURSE = process.env.CAL_COURSE || '大三下课程表';
@@ -65,19 +67,14 @@ app.get('/', (req, res) => {
   const today = new Date();
   const todayStr = fmtDate(today);
 
-  // 1. COROS training history
+  // 1. COROS weekly summary (only embed summary sub-object, not full response)
   try {
-    const histData = execSync('node "' + COROS_SCRIPT + '" --history', { timeout: 5000 });
-    const hist = JSON.parse(histData.toString());
-    html = html.replace(/let\s+allHistory\s*=\s*\[\s*\];?/, `let allHistory = ${JSON.stringify(hist.activities || [])};`);
-  } catch(e) { /* offline */ }
-
-  // 2. COROS weekly summary
-  try {
-    const wkData = execSync('node "' + COROS_SCRIPT + '" --weekly', { timeout: 5000 });
+    const wkData = execSync('node "' + COROS_SCRIPT + '" --weekly', { timeout: MCP_TIMEOUT_WEEKLY });
     const wk = JSON.parse(wkData.toString());
-    html = html.replace(/let\s+_embeddedWeekly_\s*=\s*null;?/, `let _embeddedWeekly_ = ${JSON.stringify(wk)};`);
-  } catch(e) { /* offline */ }
+    html = html.replace(/let\s+_embeddedWeekly_\s*=\s*null;?/, `let _embeddedWeekly_ = ${JSON.stringify(wk.summary || {})};`);
+  } catch(e) { console.error('Embed weekly failed:', e.message); }
+
+  // 2. COROS training history (too slow for MCP, deferred to client-side loadData)
 
   // 3. Today's course events from Apple Calendar
   try {
@@ -152,7 +149,7 @@ app.get('/api/plans', (req, res) => {
 // GET /api/weekly ── COROS weekly summary
 app.get('/api/weekly', (req, res) => {
   try {
-    const data = execSync('node "' + COROS_SCRIPT + '" --weekly', { timeout: 5000 });
+    const data = execSync('node "' + COROS_SCRIPT + '" --weekly', { timeout: MCP_TIMEOUT_WEEKLY });
     res.json(JSON.parse(data.toString()));
   } catch(e) {
     res.status(500).json({ error: e.message });
@@ -161,10 +158,11 @@ app.get('/api/weekly', (req, res) => {
 
 // GET /api/coros ── Composite COROS endpoint (used by index.html loadData)
 app.get('/api/coros', (req, res) => {
-  const mode = req.query.mode;
+  const mode = (req.query.mode || '').toLowerCase();
   try {
-    const scriptArgs = mode === 'weekly' ? '--weekly' : mode === 'history' ? '--history' : '--weekly';
-    const data = execSync('node "' + COROS_SCRIPT + '" ' + scriptArgs, { timeout: 5000 });
+    const scriptArgs = mode === 'history' ? '--history' : '--weekly';
+    const timeout = mode === 'history' ? MCP_TIMEOUT_HISTORY : MCP_TIMEOUT_WEEKLY;
+    const data = execSync('node "' + COROS_SCRIPT + '" ' + scriptArgs, { timeout });
     res.json(JSON.parse(data.toString()));
   } catch(e) {
     res.status(500).json({ error: e.message });
